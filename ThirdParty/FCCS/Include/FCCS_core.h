@@ -19,6 +19,10 @@ namespace FCCS {
 
 #define FCCS_NOVTABLE __declspec(novtable)
 
+namespace FCCS {
+	FCCS_API void MemCopyU64(void* dst, const void* src, uint64 num);
+}
+
 
 
 

@@ -15,7 +15,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	RefCountPtr<Graphics::ISwapChain> swapchain;
 	Graphics::CreateSwapChain(comandqueue.Get(), window.Get(), &desc, &swapchain);
-
+	
 	window->ShowWindow();
 	while (window->IsActive()) {
 		swapchain->Present();

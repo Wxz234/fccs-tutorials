@@ -7,27 +7,32 @@
 namespace FCCS {
 	namespace Graphics {
 
+		struct FCCS_NOVTABLE IGpuResource : public IResource {
+			virtual D3D12_GPU_VIRTUAL_ADDRESS GetVirtualAddress() const = 0;
+		};
+
+		struct FCCS_NOVTABLE IUploadBuffer : public IGpuResource {
+			virtual void* Map() = 0;
+			virtual void Unmap() = 0;
+		};
+
 		struct FCCS_NOVTABLE IPipelineState : public IResource {
-		public:
 		};
 
 		struct FCCS_NOVTABLE ICommandList : public IResource {
-		public:
 			virtual void Reset(IPipelineState *state) = 0;
 			virtual void Close() = 0;
 		};
 
 		struct FCCS_NOVTABLE ICommandQueue : public IResource {
-		public:
 			virtual void Execute(ICommandList* list) = 0;
 		};
 
 		struct FCCS_NOVTABLE IDevice : public IResource {
-		public:
 			virtual bool CreateCommandQueue(D3D12_COMMAND_LIST_TYPE type, ICommandQueue** ppCommandQueue) = 0;
+			virtual bool CreateCommandList(D3D12_COMMAND_LIST_TYPE type, ICommandList** ppCommandList) = 0;
+			virtual bool CreateUploadBuffer(uint64 buffersize, IUploadBuffer** buffer) = 0;
 		};
-
-		FCCS_API bool CreateDevice(IDevice** ppDevice);
 
 		struct FCCS_SWAP_CHAIN_DESC {
 			uint32 BufferCount;
@@ -40,6 +45,7 @@ namespace FCCS {
 			virtual void Present() = 0;
 		};
 
+		FCCS_API bool CreateDevice(IDevice** ppDevice);
 		FCCS_API bool CreateSwapChain(ICommandQueue* queue, IWindow* window, const FCCS_SWAP_CHAIN_DESC* desc, ISwapChain** ppSwapChain);
 	}
 }
