@@ -1,4 +1,6 @@
 #include <FCCS.h>
+#define D3DX12_NO_CHECK_FEATURE_SUPPORT_CLASS
+#include <d3dx12.h>
 #include <Windows.h>
 #include "Vertex.h"
 using namespace FCCS;

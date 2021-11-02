@@ -15,4 +15,13 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ps.hlsl" />
+    <None Include="vs.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
