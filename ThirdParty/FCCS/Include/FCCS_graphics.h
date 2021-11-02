@@ -24,7 +24,7 @@ namespace FCCS {
 
 		struct FCCS_NOVTABLE IDevice : public IResource {
 		public:
-			virtual ICommandQueue* CreateCommandQueue(D3D12_COMMAND_LIST_TYPE type) = 0;
+			virtual bool CreateCommandQueue(D3D12_COMMAND_LIST_TYPE type, ICommandQueue** ppCommandQueue) = 0;
 		};
 
 		FCCS_API bool CreateDevice(IDevice** ppDevice);
