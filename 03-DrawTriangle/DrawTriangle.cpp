@@ -1,5 +1,6 @@
-#include <Windows.h>
 #include <FCCS.h>
+#include <Windows.h>
+#include "Vertex.h"
 using namespace FCCS;
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
 	RefCountPtr<IWindow> window;
