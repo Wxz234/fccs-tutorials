@@ -11,6 +11,5 @@ namespace FCCS {
 		virtual bool IsActive() const = 0;
 	};
 
-	typedef RefCountPtr<IWindow> WindowHandle;
-	FCCS_API IWindow* CreateWindowExW(const wchar_t* title, uint32 width, uint32 height);
+	FCCS_API bool CreateWindowExW(const wchar_t* title, uint32 width, uint32 height, IWindow** ppWindow);
 }

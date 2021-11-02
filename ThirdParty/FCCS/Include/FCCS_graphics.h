@@ -27,7 +27,7 @@ namespace FCCS {
 			virtual ICommandQueue* CreateCommandQueue(D3D12_COMMAND_LIST_TYPE type) = 0;
 		};
 
-		FCCS_API IDevice* CreateDevice();
+		FCCS_API bool CreateDevice(IDevice** ppDevice);
 
 		struct FCCS_SWAP_CHAIN_DESC {
 			uint32 BufferCount;
@@ -39,6 +39,7 @@ namespace FCCS {
 		struct FCCS_NOVTABLE ISwapChain : public IResource {
 			virtual void Present() = 0;
 		};
-		FCCS_API ISwapChain* CreateSwapChain(ICommandQueue* queue, IWindow* window, const FCCS_SWAP_CHAIN_DESC* desc);
+
+		FCCS_API bool CreateSwapChain(ICommandQueue* queue, IWindow* window, const FCCS_SWAP_CHAIN_DESC* desc, ISwapChain** ppSwapChain);
 	}
 }
