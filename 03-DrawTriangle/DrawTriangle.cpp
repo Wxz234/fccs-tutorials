@@ -21,16 +21,23 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	Graphics::CreateSwapChain(comandqueue.Get(), window.Get(), &desc, &swapchain);
 	
 	RefCountPtr<Graphics::ICommandList> commandlists[frameCount];
+	RefCountPtr<Graphics::IGpuResource> swapchainbuffer[frameCount];
 	for (uint32 i = 0; i < frameCount; ++i) {
 		device->CreateCommandList(D3D12_COMMAND_LIST_TYPE_DIRECT, &commandlists[i]);
+		swapchain->GetBuffer(i, &swapchainbuffer[i]);
 	}
 
-	window->ShowWindow();
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc{};
+
 	while (window->IsActive()) {
 		const uint32 frameIndex = swapchain->GetCurrentBackBufferIndex();
 		commandlists[frameIndex]->Reset(nullptr);
-		//commandlists[frameIndex]->ResourceBarrier(,D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	
+		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+
+
+
+		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 		commandlists[frameIndex]->Close();
 		comandqueue->Execute(commandlists[frameIndex].Get());
 		swapchain->Present();

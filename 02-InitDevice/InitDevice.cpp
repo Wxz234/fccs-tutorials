@@ -16,7 +16,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	RefCountPtr<Graphics::ISwapChain> swapchain;
 	Graphics::CreateSwapChain(comandqueue.Get(), window.Get(), &desc, &swapchain);
 
-	window->ShowWindow();
 	while (window->IsActive()) {
 		swapchain->Present();
 	}
