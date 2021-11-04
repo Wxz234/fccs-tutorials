@@ -88,7 +88,9 @@ namespace FCCS {
 					auto* ptr = new D3D12_INPUT_ELEMENT_DESC[NumElements];
 					m_InputLayouts.reset(ptr);
 					MemCopyU64(ptr, pInputElementDescs, NumElements * sizeof(D3D12_INPUT_ELEMENT_DESC));
+					m_PSODesc.InputLayout.pInputElementDescs = m_InputLayouts.get();
 				}
+			
 			}
 			void SetPrimitiveRestart(D3D12_INDEX_BUFFER_STRIP_CUT_VALUE IBProps) {
 				m_PSODesc.IBStripCutValue = IBProps;
