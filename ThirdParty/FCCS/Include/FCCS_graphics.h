@@ -154,6 +154,8 @@ namespace FCCS {
 			virtual void Present() = 0;
 			virtual uint32 GetCurrentBackBufferIndex() const = 0;
 			virtual bool GetBuffer(uint32 n, IGpuResource** ppBuffer) = 0;
+			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRTV(uint32 n) const = 0;
+			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() const = 0;
 		};
 
 		FCCS_API bool CreateDevice(IDevice** ppDevice);

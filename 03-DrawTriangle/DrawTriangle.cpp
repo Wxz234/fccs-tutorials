@@ -54,8 +54,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	D3DCompileFromFile(L"ps.hlsl", nullptr, nullptr, "main", "ps_5_1", 0, 0, &pixelShader, nullptr);
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
 	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
 	Graphics::FCCS_GRAPHICS_PIPELINE_STATE_DESC pipelineDesc;
 	pipelineDesc.SetBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT));
@@ -74,9 +73,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	Vertex triangleVertices[] =
 	{
-		{ { 0.0f,0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-		{ { 0.25f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-		{ { -0.25f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
+		{ { 0.0f,0.5f, 0.0f } },
+		{ { 0.25f, -0.5f, 0.0f } },
+		{ { -0.25f, -0.5f, 0.0f } }
 	};
 	RefCountPtr<Graphics::IGpuResource> resource;
 	device->CreateBuffer(D3D12_HEAP_TYPE_UPLOAD, sizeof(triangleVertices), D3D12_RESOURCE_STATE_GENERIC_READ, &resource);
@@ -102,7 +101,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		const uint32 frameIndex = swapchain->GetCurrentBackBufferIndex();
 		commandlists[frameIndex]->Reset(pipeline.Get());
 		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		//list_ptr[frameIndex]->SetGraphicsRootSignature()
+		commandlists[frameIndex]->SetGraphicsRootSignature(rootSignature.Get());
+		list_ptr[frameIndex]->RSSetViewports(1, &viewport);
+		list_ptr[frameIndex]->RSSetScissorRects(1,&scissorRect);
 
 		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 		commandlists[frameIndex]->Close();
