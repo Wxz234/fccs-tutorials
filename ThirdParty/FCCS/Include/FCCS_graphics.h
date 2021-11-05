@@ -128,6 +128,7 @@ namespace FCCS {
 			virtual void Close() = 0;
 
 			virtual void ResourceBarrier(IGpuResource* resource, D3D12_RESOURCE_STATES brfore, D3D12_RESOURCE_STATES after) = 0;
+			virtual void SetGraphicsRootSignature(ID3D12RootSignature* root) = 0;
 		};
 
 		struct FCCS_NOVTABLE ICommandQueue : public IResource {

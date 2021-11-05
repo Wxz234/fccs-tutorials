@@ -33,9 +33,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	
 	RefCountPtr<Graphics::ICommandList> commandlists[frameCount];
 	RefCountPtr<Graphics::IGpuResource> swapchainbuffer[frameCount];
+	ID3D12GraphicsCommandList* list_ptr[frameCount];
 	for (uint32 i = 0; i < frameCount; ++i) {
 		device->CreateCommandList(D3D12_COMMAND_LIST_TYPE_DIRECT, &commandlists[i]);
 		swapchain->GetBuffer(i, &swapchainbuffer[i]);
+		list_ptr[i] = reinterpret_cast<ID3D12GraphicsCommandList*>(commandlists[i]->GetNativeObject());
 	}
 
 	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -100,11 +102,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		const uint32 frameIndex = swapchain->GetCurrentBackBufferIndex();
 		commandlists[frameIndex]->Reset(pipeline.Get());
 		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		//list_ptr[frameIndex]->SetGraphicsRootSignature()
 
 		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 		commandlists[frameIndex]->Close();
 		comandqueue->Execute(commandlists[frameIndex].Get());
 		swapchain->Present();
 	}
+	comandqueue->WaitIdle();
 	return 0;
 }
