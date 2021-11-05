@@ -31,7 +31,7 @@ namespace FCCS {
 
 	namespace Graphics {
 
-		struct FCCS_GRAPHICS_PIPELINE_STATE_DESC  {
+		struct FCCS_GRAPHICS_PIPELINE_STATE_DESC {
 			FCCS_GRAPHICS_PIPELINE_STATE_DESC() {
 				ZeroMemory(&m_PSODesc, sizeof(m_PSODesc));
 				m_PSODesc.NodeMask = 1;
@@ -90,7 +90,7 @@ namespace FCCS {
 					MemCopyU64(ptr, pInputElementDescs, NumElements * sizeof(D3D12_INPUT_ELEMENT_DESC));
 					m_PSODesc.InputLayout.pInputElementDescs = m_InputLayouts.get();
 				}
-			
+
 			}
 			void SetPrimitiveRestart(D3D12_INDEX_BUFFER_STRIP_CUT_VALUE IBProps) {
 				m_PSODesc.IBStripCutValue = IBProps;
@@ -124,7 +124,7 @@ namespace FCCS {
 		struct FCCS_NOVTABLE IPipelineState : public IResource {};
 
 		struct FCCS_NOVTABLE ICommandList : public IResource {
-			virtual void Reset(IPipelineState *state) = 0;
+			virtual void Reset(IPipelineState* state) = 0;
 			virtual void Close() = 0;
 
 			virtual void ResourceBarrier(IGpuResource* resource, D3D12_RESOURCE_STATES brfore, D3D12_RESOURCE_STATES after) = 0;
@@ -132,6 +132,7 @@ namespace FCCS {
 
 		struct FCCS_NOVTABLE ICommandQueue : public IResource {
 			virtual void Execute(ICommandList* list) = 0;
+			virtual void WaitIdle() = 0;
 		};
 
 		struct FCCS_NOVTABLE IDevice : public IResource {

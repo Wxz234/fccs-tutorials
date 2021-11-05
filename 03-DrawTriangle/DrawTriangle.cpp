@@ -11,9 +11,10 @@ using namespace FCCS;
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
 	constexpr uint32 frameCount = 3;
 	constexpr DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	constexpr uint32 width = 800, height = 600;
 
 	RefCountPtr<IWindow> window;
-	CreateWindowExW(L"fccs", 800, 600, &window);
+	CreateWindowExW(L"fccs", width, height, &window);
 
 	RefCountPtr<Graphics::IDevice> device;
 	Graphics::CreateDevice(&device);
@@ -66,15 +67,39 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	pipelineDesc.SetPixelShader(CD3DX12_SHADER_BYTECODE(pixelShader.Get()));
 	pipelineDesc.SetRootSignature(rootSignature.Get());
 
-	RefCountPtr<Graphics::IPipelineState> _pipeline;
-	device->CreateGraphicsPipelineState(&pipelineDesc, &_pipeline);
+	RefCountPtr<Graphics::IPipelineState> pipeline;
+	device->CreateGraphicsPipelineState(&pipelineDesc, &pipeline);
+
+	Vertex triangleVertices[] =
+	{
+		{ { 0.0f,0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+		{ { 0.25f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+		{ { -0.25f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
+	};
+	RefCountPtr<Graphics::IGpuResource> resource;
+	device->CreateBuffer(D3D12_HEAP_TYPE_UPLOAD, sizeof(triangleVertices), D3D12_RESOURCE_STATE_GENERIC_READ, &resource);
+	void* res_address = resource->Map();
+	MemCopyU64(res_address, triangleVertices, sizeof(triangleVertices));
+	resource->Unmap();
+	auto vbv = resource->GetVertexBufferView(sizeof(Vertex), 3);
+
+	D3D12_VIEWPORT viewport{};
+	viewport.TopLeftX = 0.0f;
+	viewport.TopLeftY = 0.0f;
+	viewport.Width = static_cast<float>(width);
+	viewport.Height = static_cast<float>(height);
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 0.1f;
+	D3D12_RECT scissorRect{};
+	scissorRect.left = 0;
+	scissorRect.top = 0;
+	scissorRect.right = static_cast<LONG>(width);
+	scissorRect.bottom = static_cast<LONG>(height);
+
 	while (window->IsActive()) {
 		const uint32 frameIndex = swapchain->GetCurrentBackBufferIndex();
-		commandlists[frameIndex]->Reset(nullptr);
+		commandlists[frameIndex]->Reset(pipeline.Get());
 		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-
-
 
 		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 		commandlists[frameIndex]->Close();
