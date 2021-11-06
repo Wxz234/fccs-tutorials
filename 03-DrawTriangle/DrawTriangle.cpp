@@ -55,7 +55,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	D3DCompileFromFile(L"ps.hlsl", nullptr, nullptr, "main", "ps_5_1", 0, 0, &pixelShader, nullptr);
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
 	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
 	Graphics::FCCS_GRAPHICS_PIPELINE_STATE_DESC pipelineDesc;
 	pipelineDesc.SetBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT));
@@ -74,17 +74,17 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	Vertex triangleVertices[] =
 	{
-		{ { 0.0f,0.5f, 0.0f } },
-		{ { 0.25f, -0.5f, 0.0f } },
-		{ { -0.25f, -0.5f, 0.0f } }
+		{ { 0.0f,0.5f, 0.0f,1.f } },
+		{ { 0.25f, -0.5f, 0.0f,1.f } },
+		{ { -0.25f, -0.5f, 0.0f,1.f } }
 	};
 	RefCountPtr<Graphics::IGpuResource> resource;
 	device->CreateBuffer(D3D12_HEAP_TYPE_UPLOAD, sizeof(triangleVertices), D3D12_RESOURCE_STATE_GENERIC_READ, &resource);
 	void* res_address = resource->Map();
 	MemCopyU64(res_address, triangleVertices, sizeof(triangleVertices));
 	resource->Unmap();
-	auto vbv = resource->GetVertexBufferView(sizeof(Vertex), 3);
-
+	auto vbv = resource->GetVertexBufferView(sizeof(Vertex), sizeof(triangleVertices));
+	
 	D3D12_VIEWPORT viewport{};
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
@@ -107,14 +107,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		auto rtv = swapchain->GetRTV(frameIndex);
 		auto dsv = swapchain->GetDSV();
-		//list_ptr[frameIndex]->OMSetRenderTargets(1, &rtv, FALSE, nullptr);
+		list_ptr[frameIndex]->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 
-		//const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-		//list_ptr[frameIndex]->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-		//list_ptr[frameIndex]->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
-		//list_ptr[frameIndex]->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		//list_ptr[frameIndex]->IASetVertexBuffers(0, 1, &vbv);
-		//list_ptr[frameIndex]->DrawInstanced(3, 1, 0, 0);
+		const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+		list_ptr[frameIndex]->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+		list_ptr[frameIndex]->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
+		list_ptr[frameIndex]->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		list_ptr[frameIndex]->IASetVertexBuffers(0, 1, &vbv);
+		list_ptr[frameIndex]->DrawInstanced(3, 1, 0, 0);
 
 		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 		commandlists[frameIndex]->Close();
