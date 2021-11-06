@@ -10,8 +10,9 @@
 using namespace FCCS;
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
 	constexpr uint32 frameCount = 3;
-	constexpr DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	constexpr DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM, ds_format = DXGI_FORMAT_R24G8_TYPELESS;
 	constexpr uint32 width = 800, height = 600;
+
 
 	RefCountPtr<IWindow> window;
 	CreateWindowExW(L"fccs", width, height, &window);
@@ -67,6 +68,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	pipelineDesc.SetVertexShader(CD3DX12_SHADER_BYTECODE(vertexShader.Get()));
 	pipelineDesc.SetPixelShader(CD3DX12_SHADER_BYTECODE(pixelShader.Get()));
 	pipelineDesc.SetRootSignature(rootSignature.Get());
+	
 
 	RefCountPtr<Graphics::IPipelineState> pipeline;
 	device->CreateGraphicsPipelineState(&pipelineDesc, &pipeline);
@@ -104,10 +106,21 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		commandlists[frameIndex]->SetGraphicsRootSignature(rootSignature.Get());
 		list_ptr[frameIndex]->RSSetViewports(1, &viewport);
 		list_ptr[frameIndex]->RSSetScissorRects(1,&scissorRect);
+		auto rtv = swapchain->GetRTV(frameIndex);
+		auto dsv = swapchain->GetDSV();
+		list_ptr[frameIndex]->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
+
+		const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+		list_ptr[frameIndex]->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+		list_ptr[frameIndex]->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
+		list_ptr[frameIndex]->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		list_ptr[frameIndex]->IASetVertexBuffers(0, 1, &vbv);
+		list_ptr[frameIndex]->DrawInstanced(3, 1, 0, 0);
 
 		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 		commandlists[frameIndex]->Close();
 		comandqueue->Execute(commandlists[frameIndex].Get());
+
 		swapchain->Present();
 	}
 	comandqueue->WaitIdle();

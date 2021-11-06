@@ -148,6 +148,7 @@ namespace FCCS {
 			uint32 Width;
 			uint32 Height;
 			DXGI_FORMAT Format;
+			DXGI_FORMAT DepthStencilFormat;
 		};
 
 		struct FCCS_NOVTABLE ISwapChain : public IResource {
