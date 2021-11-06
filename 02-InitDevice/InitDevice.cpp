@@ -13,6 +13,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	desc.Width = 800;
 	desc.Height = 600;
 	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.DepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	RefCountPtr<Graphics::ISwapChain> swapchain;
 	Graphics::CreateSwapChain(comandqueue.Get(), window.Get(), &desc, &swapchain);
 

@@ -10,7 +10,7 @@
 using namespace FCCS;
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
 	constexpr uint32 frameCount = 3;
-	constexpr DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM, ds_format = DXGI_FORMAT_R24G8_TYPELESS;
+	constexpr DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM, ds_format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	constexpr uint32 width = 800, height = 600;
 
 
@@ -29,6 +29,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	desc.Width = 800;
 	desc.Height = 600;
 	desc.Format = format;
+	desc.DepthStencilFormat = ds_format;
 	RefCountPtr<Graphics::ISwapChain> swapchain;
 	Graphics::CreateSwapChain(comandqueue.Get(), window.Get(), &desc, &swapchain);
 	
@@ -48,7 +49,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &signature, &error);
 	device_ptr->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 
-
 	RefCountPtr<ID3DBlob> vertexShader;
 	RefCountPtr<ID3DBlob> pixelShader;
 	D3DCompileFromFile(L"vs.hlsl", nullptr, nullptr, "main", "vs_5_1", 0, 0, &vertexShader, nullptr);
@@ -60,7 +60,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	Graphics::FCCS_GRAPHICS_PIPELINE_STATE_DESC pipelineDesc;
 	pipelineDesc.SetBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT));
 	pipelineDesc.SetDepthStencilState(CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT));
-	pipelineDesc.SetRenderTargetFormats(1, &format, DXGI_FORMAT_UNKNOWN);
+	pipelineDesc.SetRenderTargetFormats(1, &format, ds_format);
 	pipelineDesc.SetInputLayout(_countof(inputElementDescs), inputElementDescs);
 	pipelineDesc.SetRasterizerState(CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT));
 	pipelineDesc.SetSampleMask(0xFFFFFFFF);
@@ -69,7 +69,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	pipelineDesc.SetPixelShader(CD3DX12_SHADER_BYTECODE(pixelShader.Get()));
 	pipelineDesc.SetRootSignature(rootSignature.Get());
 	
-
 	RefCountPtr<Graphics::IPipelineState> pipeline;
 	device->CreateGraphicsPipelineState(&pipelineDesc, &pipeline);
 
@@ -102,20 +101,20 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	while (window->IsActive()) {
 		const uint32 frameIndex = swapchain->GetCurrentBackBufferIndex();
 		commandlists[frameIndex]->Reset(pipeline.Get());
-		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		commandlists[frameIndex]->SetGraphicsRootSignature(rootSignature.Get());
 		list_ptr[frameIndex]->RSSetViewports(1, &viewport);
-		list_ptr[frameIndex]->RSSetScissorRects(1,&scissorRect);
+		list_ptr[frameIndex]->RSSetScissorRects(1, &scissorRect);
+		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		auto rtv = swapchain->GetRTV(frameIndex);
 		auto dsv = swapchain->GetDSV();
-		list_ptr[frameIndex]->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
+		//list_ptr[frameIndex]->OMSetRenderTargets(1, &rtv, FALSE, nullptr);
 
-		const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-		list_ptr[frameIndex]->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-		list_ptr[frameIndex]->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
-		list_ptr[frameIndex]->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		list_ptr[frameIndex]->IASetVertexBuffers(0, 1, &vbv);
-		list_ptr[frameIndex]->DrawInstanced(3, 1, 0, 0);
+		//const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+		//list_ptr[frameIndex]->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+		//list_ptr[frameIndex]->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
+		//list_ptr[frameIndex]->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		//list_ptr[frameIndex]->IASetVertexBuffers(0, 1, &vbv);
+		//list_ptr[frameIndex]->DrawInstanced(3, 1, 0, 0);
 
 		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 		commandlists[frameIndex]->Close();
