@@ -6,7 +6,7 @@ namespace FCCS {
 	public:
 		Camera() {
 			LookAt({ 0,0,0 }, { 0,0,1 }, { 0,1,0 });
-			Perspective(XM_PIDIV2, 1, 1, 100);
+			Perspective(DirectX::XM_PIDIV2, 1, 1, 100);
 		}
 		void LookAt(
 			const DirectX::XMVECTOR &EyePosition,
