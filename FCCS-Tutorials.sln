@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02-InitDevice", "02-InitDev
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03-DrawTriangle", "03-DrawTriangle\03-DrawTriangle.vcxproj", "{8AF8E7DB-4F28-4EA0-86BD-9A6F9EE338C3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "04-Camera", "04-Camera\04-Camera.vcxproj", "{87792E7B-9D0B-4691-B194-3176E80F51ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,6 +29,10 @@ Global
 		{8AF8E7DB-4F28-4EA0-86BD-9A6F9EE338C3}.Debug|x64.Build.0 = Debug|x64
 		{8AF8E7DB-4F28-4EA0-86BD-9A6F9EE338C3}.Release|x64.ActiveCfg = Release|x64
 		{8AF8E7DB-4F28-4EA0-86BD-9A6F9EE338C3}.Release|x64.Build.0 = Release|x64
+		{87792E7B-9D0B-4691-B194-3176E80F51ED}.Debug|x64.ActiveCfg = Debug|x64
+		{87792E7B-9D0B-4691-B194-3176E80F51ED}.Debug|x64.Build.0 = Debug|x64
+		{87792E7B-9D0B-4691-B194-3176E80F51ED}.Release|x64.ActiveCfg = Release|x64
+		{87792E7B-9D0B-4691-B194-3176E80F51ED}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
