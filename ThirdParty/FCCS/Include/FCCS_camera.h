@@ -24,7 +24,7 @@ namespace FCCS {
 		DirectX::XMVECTOR _eye;
 		DirectX::XMVECTOR _at;
 		DirectX::XMVECTOR _up;
-		DirectX::XMMATRIX _view
+		DirectX::XMMATRIX _view;
 		DirectX::XMMATRIX _projection;
 	};
 }
