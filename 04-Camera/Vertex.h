@@ -1,5 +1,5 @@
 #pragma once
 struct Vertex
 {
-	float position[4];
+	float position[3];
 };

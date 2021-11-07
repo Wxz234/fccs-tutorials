@@ -55,7 +55,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	D3DCompileFromFile(L"ps.hlsl", nullptr, nullptr, "main", "ps_5_1", 0, 0, &pixelShader, nullptr);
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
 	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
 	Graphics::FCCS_GRAPHICS_PIPELINE_STATE_DESC pipelineDesc;
 	pipelineDesc.SetBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT));
@@ -74,9 +74,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	Vertex triangleVertices[] =
 	{
-		{ { 0.0f,0.5f, 0.0f,1.f } },
-		{ { 0.25f, -0.5f, 0.0f,1.f } },
-		{ { -0.25f, -0.5f, 0.0f,1.f } }
+		{ { 0.0f,0.5f, 1.0f} },
+		{ { 0.25f, -0.5f,0.9f } },
+		{ { -0.25f, -0.5f, 0.9f } }
 	};
 	RefCountPtr<Graphics::IGpuResource> resource;
 	device->CreateBuffer(D3D12_HEAP_TYPE_UPLOAD, sizeof(triangleVertices), D3D12_RESOURCE_STATE_GENERIC_READ, &resource);
@@ -97,6 +97,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	scissorRect.top = 0;
 	scissorRect.right = static_cast<LONG>(width);
 	scissorRect.bottom = static_cast<LONG>(height);
+
+	Camera camera;
 
 	while (window->IsActive()) {
 		const uint32 frameIndex = swapchain->GetCurrentBackBufferIndex();
