@@ -114,6 +114,18 @@ namespace FCCS {
 			RefCountPtr<ID3D12RootSignature> _root;
 		};
 
+		struct FCCS_NOVTABLE IDynamicDescriptorHeapPool : public IResource {
+			virtual void PushCBV() = 0;
+			virtual void PushUAV() = 0;
+			virtual void PushSRV() = 0;
+			virtual void PushSampler() = 0;
+			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetCBV(uint32 n) = 0;
+			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetUAV(uint32 n) = 0;
+			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetSRV(uint32 n) = 0;
+			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetSampler(uint32 n) = 0;
+			virtual void Clear() = 0;
+		};
+
 		struct FCCS_NOVTABLE IGpuResource : public IResource {
 			virtual D3D12_GPU_VIRTUAL_ADDRESS GetVirtualAddress() const = 0;
 			virtual void* Map() = 0;
@@ -141,6 +153,7 @@ namespace FCCS {
 			virtual bool CreateCommandList(D3D12_COMMAND_LIST_TYPE type, ICommandList** ppCommandList) = 0;
 			virtual bool CreateBuffer(D3D12_HEAP_TYPE type, uint64 size, D3D12_RESOURCE_STATES state, IGpuResource** ppBuffer) = 0;
 			virtual bool CreateGraphicsPipelineState(const FCCS_GRAPHICS_PIPELINE_STATE_DESC* desc, IPipelineState** ppPipelineState) = 0;
+			virtual bool CreateDynamicDescriptorHeap(IDynamicDescriptorHeapPool** ppPool) = 0;
 		};
 
 		struct FCCS_SWAP_CHAIN_DESC {
