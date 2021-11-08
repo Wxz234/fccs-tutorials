@@ -115,14 +115,14 @@ namespace FCCS {
 		};
 
 		struct FCCS_NOVTABLE IDynamicDescriptorHeapPool : public IResource {
-			virtual void PushCBV() = 0;
-			virtual void PushUAV() = 0;
-			virtual void PushSRV() = 0;
-			virtual void PushSampler() = 0;
-			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetCBV(uint32 n) = 0;
-			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetUAV(uint32 n) = 0;
-			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetSRV(uint32 n) = 0;
-			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetSampler(uint32 n) = 0;
+			virtual void PushCBVHeap() = 0;
+			virtual void PushUAVHeap() = 0;
+			virtual void PushSRVHeap() = 0;
+			virtual void PushSamplerHeap() = 0;
+			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetCBVHandle(uint32 n) = 0;
+			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetUAVHandle(uint32 n) = 0;
+			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetSRVHandle(uint32 n) = 0;
+			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetSamplerHandle(uint32 n) = 0;
 			virtual void Clear() = 0;
 		};
 
@@ -168,8 +168,8 @@ namespace FCCS {
 			virtual void Present() = 0;
 			virtual uint32 GetCurrentBackBufferIndex() const = 0;
 			virtual bool GetBuffer(uint32 n, IGpuResource** ppBuffer) = 0;
-			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRTV(uint32 n) const = 0;
-			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() const = 0;
+			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRTVHandle(uint32 n) const = 0;
+			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const = 0;
 		};
 
 		FCCS_API bool CreateDevice(IDevice** ppDevice);
