@@ -105,13 +105,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		list_ptr[frameIndex]->RSSetViewports(1, &viewport);
 		list_ptr[frameIndex]->RSSetScissorRects(1, &scissorRect);
 		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		auto rtv = swapchain->GetRTV(frameIndex);
-		auto dsv = swapchain->GetDSV();
-		list_ptr[frameIndex]->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
+		auto rtvHandle = swapchain->GetRTVHandle(frameIndex);
+		auto dsvHandle = swapchain->GetDSVHandle();
+		list_ptr[frameIndex]->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 
 		const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-		list_ptr[frameIndex]->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-		list_ptr[frameIndex]->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
+		list_ptr[frameIndex]->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+		list_ptr[frameIndex]->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
 		list_ptr[frameIndex]->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		list_ptr[frameIndex]->IASetVertexBuffers(0, 1, &vbv);
 		list_ptr[frameIndex]->DrawInstanced(3, 1, 0, 0);
