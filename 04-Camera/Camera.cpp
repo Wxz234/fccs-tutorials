@@ -82,9 +82,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	Vertex triangleVertices[] =
 	{
-		{ { 0.0f,0.5f, 1.0f} },
-		{ { 0.25f, -0.5f,0.9f } },
-		{ { -0.25f, -0.5f, 0.9f } }
+		{ { 0.0f,5.f, 10.f} },
+		{ { 2.5f, -5.f,10.f } },
+		{ { -2.5f, -5.f, 10.f } }
 	};
 	RefCountPtr<Graphics::IGpuResource> resource;
 	RefCountPtr<Graphics::IGpuResource> camera_resource;
@@ -95,16 +95,30 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	auto vbv = resource->GetVertexBufferView(sizeof(Vertex), sizeof(triangleVertices));
 
 	Camera camera;
+
 	CameraMatrix mat;
-	mat.v = camera.GetView();
-	mat.p = camera.GetProjection();
-	device->CreateBuffer(D3D12_HEAP_TYPE_UPLOAD, sizeof(mat), D3D12_RESOURCE_STATE_GENERIC_READ, &camera_resource);
+	uint32 SizeInBytes = 256;
+
+	mat.v = DirectX::XMMatrixTranspose(camera.GetView());
+	mat.p = DirectX::XMMatrixTranspose(camera.GetProjection());
+	device->CreateBuffer(D3D12_HEAP_TYPE_UPLOAD, SizeInBytes, D3D12_RESOURCE_STATE_GENERIC_READ, &camera_resource);
 	void* cb_res = camera_resource->Map();
 	MemCopyU64(cb_res, &mat, sizeof(mat));
 	camera_resource->Unmap();
 
-	device->CreateDynamicDescriptorHeap();
-	device_ptr->CreateConstantBufferView()
+	RefCountPtr<ID3D12DescriptorHeap> cbvHeap;
+	{
+		D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
+		cbvHeapDesc.NumDescriptors = 1;
+		cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+		cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		device_ptr->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&cbvHeap));
+	}
+
+	D3D12_CONSTANT_BUFFER_VIEW_DESC cb_desc{};
+	cb_desc.BufferLocation = camera_resource->GetVirtualAddress();
+	cb_desc.SizeInBytes = SizeInBytes;
+	device_ptr->CreateConstantBufferView(&cb_desc, cbvHeap->GetCPUDescriptorHandleForHeapStart());
 
 	D3D12_VIEWPORT viewport{};
 	viewport.TopLeftX = 0.0f;
@@ -119,11 +133,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	scissorRect.right = static_cast<LONG>(width);
 	scissorRect.bottom = static_cast<LONG>(height);
 
-
 	while (window->IsActive()) {
 		const uint32 frameIndex = swapchain->GetCurrentBackBufferIndex();
 		commandlists[frameIndex]->Reset(pipeline.Get());
 		commandlists[frameIndex]->SetGraphicsRootSignature(rootSignature.Get());
+
+		ID3D12DescriptorHeap* ppHeaps[] = { cbvHeap.Get() };
+		list_ptr[frameIndex]->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+		list_ptr[frameIndex]->SetGraphicsRootDescriptorTable(0, cbvHeap->GetGPUDescriptorHandleForHeapStart());
 		list_ptr[frameIndex]->RSSetViewports(1, &viewport);
 		list_ptr[frameIndex]->RSSetScissorRects(1, &scissorRect);
 		commandlists[frameIndex]->ResourceBarrier(swapchainbuffer[frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
