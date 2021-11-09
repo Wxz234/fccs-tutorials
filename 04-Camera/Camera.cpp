@@ -95,9 +95,17 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	auto vbv = resource->GetVertexBufferView(sizeof(Vertex), sizeof(triangleVertices));
 
 	Camera camera;
-	device->CreateBuffer(D3D12_HEAP_TYPE_UPLOAD, 100, D3D12_RESOURCE_STATE_GENERIC_READ, &camera_resource);
+	CameraMatrix mat;
+	mat.v = camera.GetView();
+	mat.p = camera.GetProjection();
+	device->CreateBuffer(D3D12_HEAP_TYPE_UPLOAD, sizeof(mat), D3D12_RESOURCE_STATE_GENERIC_READ, &camera_resource);
 	void* cb_res = camera_resource->Map();
-	
+	MemCopyU64(cb_res, &mat, sizeof(mat));
+	camera_resource->Unmap();
+
+	device->CreateDynamicDescriptorHeap();
+	device_ptr->CreateConstantBufferView()
+
 	D3D12_VIEWPORT viewport{};
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;

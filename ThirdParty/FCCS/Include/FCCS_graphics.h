@@ -153,7 +153,7 @@ namespace FCCS {
 			virtual bool CreateCommandList(D3D12_COMMAND_LIST_TYPE type, ICommandList** ppCommandList) = 0;
 			virtual bool CreateBuffer(D3D12_HEAP_TYPE type, uint64 size, D3D12_RESOURCE_STATES state, IGpuResource** ppBuffer) = 0;
 			virtual bool CreateGraphicsPipelineState(const FCCS_GRAPHICS_PIPELINE_STATE_DESC* desc, IPipelineState** ppPipelineState) = 0;
-			virtual bool CreateDynamicDescriptorHeap(IDynamicDescriptorHeapPool** ppPool) = 0;
+			virtual bool CreateDynamicDescriptorHeapPool(IDynamicDescriptorHeapPool** ppPool) = 0;
 		};
 
 		struct FCCS_SWAP_CHAIN_DESC {
