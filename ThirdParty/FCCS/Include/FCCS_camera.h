@@ -20,6 +20,14 @@ namespace FCCS {
 		void Perspective(float FovAngleY,float AspectRatio,float NearZ,float FarZ) {
 			_projection = DirectX::XMMatrixPerspectiveFovLH(FovAngleY, AspectRatio, NearZ, FarZ);
 		}
+
+		DirectX::XMMATRIX GetView() const {
+			return _view;
+		}
+
+		DirectX::XMMATRIX GetProjection() const {
+			return _projection;
+		}
 	private:
 		DirectX::XMVECTOR _eye;
 		DirectX::XMVECTOR _at;

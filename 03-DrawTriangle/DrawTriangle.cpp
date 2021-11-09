@@ -91,7 +91,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	viewport.Width = static_cast<float>(width);
 	viewport.Height = static_cast<float>(height);
 	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 0.1f;
+	viewport.MaxDepth = 1.0f;
 	D3D12_RECT scissorRect{};
 	scissorRect.left = 0;
 	scissorRect.top = 0;

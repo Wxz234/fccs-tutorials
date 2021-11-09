@@ -42,11 +42,19 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		list_ptr[i] = reinterpret_cast<ID3D12GraphicsCommandList*>(commandlists[i]->GetNativeObject());
 	}
 
-	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	CD3DX12_DESCRIPTOR_RANGE1 ranges;
+	CD3DX12_ROOT_PARAMETER1 rootParameters;
+
+	ranges.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+	rootParameters.InitAsDescriptorTable(1, &ranges);
+
+	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+	rootSignatureDesc.Init_1_1(1, &rootParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
 	RefCountPtr<ID3D12RootSignature> rootSignature;
 	RefCountPtr<ID3DBlob> signature;
 	RefCountPtr<ID3DBlob> error;
-	D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &signature, &error);
+	D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_1, &signature, &error);
 	device_ptr->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 
 	RefCountPtr<ID3DBlob> vertexShader;
@@ -79,11 +87,16 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		{ { -0.25f, -0.5f, 0.9f } }
 	};
 	RefCountPtr<Graphics::IGpuResource> resource;
+	RefCountPtr<Graphics::IGpuResource> camera_resource;
 	device->CreateBuffer(D3D12_HEAP_TYPE_UPLOAD, sizeof(triangleVertices), D3D12_RESOURCE_STATE_GENERIC_READ, &resource);
 	void* res_address = resource->Map();
 	MemCopyU64(res_address, triangleVertices, sizeof(triangleVertices));
 	resource->Unmap();
 	auto vbv = resource->GetVertexBufferView(sizeof(Vertex), sizeof(triangleVertices));
+
+	Camera camera;
+	device->CreateBuffer(D3D12_HEAP_TYPE_UPLOAD, 100, D3D12_RESOURCE_STATE_GENERIC_READ, &camera_resource);
+	void* cb_res = camera_resource->Map();
 	
 	D3D12_VIEWPORT viewport{};
 	viewport.TopLeftX = 0.0f;
@@ -91,14 +104,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	viewport.Width = static_cast<float>(width);
 	viewport.Height = static_cast<float>(height);
 	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 0.1f;
+	viewport.MaxDepth = 1.0f;
 	D3D12_RECT scissorRect{};
 	scissorRect.left = 0;
 	scissorRect.top = 0;
 	scissorRect.right = static_cast<LONG>(width);
 	scissorRect.bottom = static_cast<LONG>(height);
 
-	Camera camera;
 
 	while (window->IsActive()) {
 		const uint32 frameIndex = swapchain->GetCurrentBackBufferIndex();
