@@ -13,7 +13,7 @@ PSInput main(
 ) {
 
 	float4 pos = float4(position.x, position.y, position.z, 1);
-	pos = mul(pos, v);
+	pos = mul(v, pos);
 	pos = mul(pos, p);
 	PSInput result;
 	result.position = pos;
