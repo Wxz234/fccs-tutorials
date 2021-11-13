@@ -39,6 +39,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	desc.Hwnd = window->GetHWND();
 	desc.BufferCount = bufferCount;
 	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.DepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	Context context(&desc);
 	return window->Run(&context);
 }
