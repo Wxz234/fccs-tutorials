@@ -13,6 +13,7 @@ public:
 		device = FCCS::RHI::CreateRHIDevice();
 		queue = device->CreateCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
 		swapchain = FCCS::RHI::CreateSwapChain(queue, &desc);
+		device->CreateTextureFromFile(L"C:\\Users\\42937\\Desktop\\pycode\\1.jpg");
 	}
 	void Update() {
 		swapchain->Present();
