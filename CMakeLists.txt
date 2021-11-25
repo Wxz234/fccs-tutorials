@@ -9,4 +9,5 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output")
 add_subdirectory(FCCS)
 add_subdirectory(01-CreateWindow)
 add_subdirectory(02-InitDevice)
+add_subdirectory(03-DrawTriangle)
 
