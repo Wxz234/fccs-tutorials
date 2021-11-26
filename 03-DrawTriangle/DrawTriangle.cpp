@@ -6,10 +6,15 @@ public:
 		desc = *pDesc;
 		device = nullptr;
 		swapchain = nullptr;
+		vs = nullptr;
+		ps = nullptr;
 	}
 
 	void Initialize() {
 		FCCS::RHI::CreateDeviceAndSwapChain(&desc, &device, &swapchain);
+		vs = FCCS::RHI::CompileShaderFromFile(L"DrawTriangle.hlsl", "VSMain", "vs_5_1");
+		ps = FCCS::RHI::CompileShaderFromFile(L"DrawTriangle.hlsl", "PSMain", "ps_5_1");
+
 	}
 	void Update() {
 		swapchain->Present();
@@ -17,11 +22,15 @@ public:
 	void Release() {
 		FCCS::RHI::DestroyRHIObject(device);
 		FCCS::RHI::DestroyRHIObject(swapchain);
+		FCCS::RHI::DestroyRHIObject(vs);
+		FCCS::RHI::DestroyRHIObject(ps);
 	}
 
 	FCCS::RHI::Device* device;
 	FCCS::RHI::SwapChain* swapchain;
 	FCCS::FCCS_SWAP_CHAIN_DESC desc;
+	FCCS::RHI::Blob* vs;
+	FCCS::RHI::Blob* ps;
 };
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
