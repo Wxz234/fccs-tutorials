@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01-CreateWindow", "01-Creat
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02-InitDevice", "02-InitDevice\02-InitDevice.vcxproj", "{FFEBE8CD-7E56-4273-A69B-6825129FC9B7}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03-DrawTriangle", "03-DrawTriangle\03-DrawTriangle.vcxproj", "{E6083713-EBFB-4F09-B282-F778A7A98817}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,10 @@ Global
 		{FFEBE8CD-7E56-4273-A69B-6825129FC9B7}.Debug|x64.Build.0 = Debug|x64
 		{FFEBE8CD-7E56-4273-A69B-6825129FC9B7}.Release|x64.ActiveCfg = Release|x64
 		{FFEBE8CD-7E56-4273-A69B-6825129FC9B7}.Release|x64.Build.0 = Release|x64
+		{E6083713-EBFB-4F09-B282-F778A7A98817}.Debug|x64.ActiveCfg = Debug|x64
+		{E6083713-EBFB-4F09-B282-F778A7A98817}.Debug|x64.Build.0 = Debug|x64
+		{E6083713-EBFB-4F09-B282-F778A7A98817}.Release|x64.ActiveCfg = Release|x64
+		{E6083713-EBFB-4F09-B282-F778A7A98817}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
