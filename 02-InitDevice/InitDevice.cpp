@@ -30,9 +30,3 @@ public:
 	FCCS::RHI::Device* device = nullptr;
 	FCCS::RHI::SwapChain* swapchain = nullptr;
 };
-
-int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
-	auto window = FCCS::CreateWindowExW(L"fccs", width, height);
-	Context context(window->GetHWND());
-	return window->Run(&context);
-}
