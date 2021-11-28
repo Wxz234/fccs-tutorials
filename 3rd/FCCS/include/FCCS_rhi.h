@@ -60,6 +60,7 @@ namespace FCCS {
 
 		struct SwapChain : public RHIObject {
 			virtual void Present() = 0;
+			virtual uint32 GetBackBufferIndex()const = 0;
 			virtual IDXGISwapChain* GetSwapChainPtr() const = 0;
 		};
 

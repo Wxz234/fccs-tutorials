@@ -18,7 +18,9 @@ public:
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		desc.DepthStencilFormat = DXGI_FORMAT_D32_FLOAT;
 		FCCS::RHI::CreateDeviceAndSwapChain(&desc, &device, &swapchain);
-		list = device->CreateCommandList(D3D12_COMMAND_LIST_TYPE_DIRECT);
+		for(unsigned i = 0;i < bufferCount; ++i) {
+			list[i] = device->CreateCommandList(D3D12_COMMAND_LIST_TYPE_DIRECT);
+		}
 		queue = device->GetDefaultCommandQueue();
 
 		vs = FCCS::RHI::CompileShaderFromFile(L"shader.hlsl", "VSMain", "vs_5_1");
@@ -55,7 +57,7 @@ public:
 		queue = device->GetDefaultCommandQueue();
 	}
 	void Update() {
-		auto d3dlist = list->GetCommandListPtr();
+		auto d3dlist = list[1]->GetCommandListPtr();
 		auto d3dqueue = queue->GetCommandQueuePtr();
 		ID3D12CommandList* pLists[1] = { d3dlist };
 		list->Reset(pso);
@@ -79,7 +81,7 @@ public:
 
 	FCCS::RHI::Device* device = nullptr;
 	FCCS::RHI::SwapChain* swapchain = nullptr;
-	FCCS::RHI::CommandList* list = nullptr;
+	FCCS::RHI::CommandList* list[bufferCount] = {};
 	FCCS::RHI::CommandQueue* queue = nullptr;
 	FCCS::RHI::RootSignature* rootsignature = nullptr;
 	FCCS::RHI::PSO* pso = nullptr;
