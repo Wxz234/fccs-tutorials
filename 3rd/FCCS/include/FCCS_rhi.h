@@ -37,6 +37,7 @@ namespace FCCS {
 		};
 
 		struct CommandList : public RHIObject {
+			virtual void Reset(PSO *pso) = 0;
 			virtual ID3D12GraphicsCommandList* GetCommandListPtr() const = 0;
 		};
 
