@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include <FCCS.h>
+#define D3DX12_NO_CHECK_FEATURE_SUPPORT_CLASS
 #include <d3dx12.h>
 constexpr unsigned width = 800, height = 600;
 constexpr unsigned bufferCount = 3;
@@ -42,8 +43,25 @@ public:
 		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 		psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 		psoDesc.SampleDesc.Count = 1;
+
+		float m_aspectRatio = static_cast<float>(width) / height;
+		float triangleVertices[3][4] = {
+			{ 0.0f, 0.25f * m_aspectRatio, 0.0f,1.0f },
+			{ 0.25f, -0.25f * m_aspectRatio, 0.0f,1.0f },
+			{ -0.25f, -0.25f * m_aspectRatio, 0.0f,1.0f }
+		};
+		buffer = device->CreateStaticBuffer(triangleVertices, sizeof(triangleVertices));
+
+		queue = device->GetDefaultCommandQueue();
 	}
 	void Update() {
+		auto d3dlist = list->GetCommandListPtr();
+		auto d3dqueue = queue->GetCommandQueuePtr();
+		ID3D12CommandList* pLists[1] = { d3dlist };
+		list->Reset(pso);
+
+		d3dlist->Close();
+		d3dqueue->ExecuteCommandLists(1, pLists);
 		swapchain->Present();
 	}
 	void Release() {
@@ -51,8 +69,10 @@ public:
 		FCCS::RHI::DestroyRHIObject(swapchain);
 		FCCS::RHI::DestroyRHIObject(list);
 		FCCS::RHI::DestroyRHIObject(rootsignature);
+		FCCS::RHI::DestroyRHIObject(pso);
 		FCCS::RHI::DestroyRHIObject(vs);
 		FCCS::RHI::DestroyRHIObject(ps);
+		FCCS::RHI::DestroyRHIObject(buffer);
 	}
 
 	HWND hwnd;
@@ -62,8 +82,10 @@ public:
 	FCCS::RHI::CommandList* list = nullptr;
 	FCCS::RHI::CommandQueue* queue = nullptr;
 	FCCS::RHI::RootSignature* rootsignature = nullptr;
+	FCCS::RHI::PSO* pso = nullptr;
 	FCCS::RHI::Blob* vs = nullptr;
 	FCCS::RHI::Blob* ps = nullptr;
+	FCCS::RHI::StaticBuffer* buffer = nullptr;
 };
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
