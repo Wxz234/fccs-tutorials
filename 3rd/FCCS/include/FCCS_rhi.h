@@ -61,6 +61,8 @@ namespace FCCS {
 		struct SwapChain : public RHIObject {
 			virtual void Present() = 0;
 			virtual uint32 GetBackBufferIndex()const = 0;
+			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRTV(uint32 n) = 0;
+			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() = 0;
 			virtual IDXGISwapChain* GetSwapChainPtr() const = 0;
 		};
 

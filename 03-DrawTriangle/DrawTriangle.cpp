@@ -57,11 +57,18 @@ public:
 		queue = device->GetDefaultCommandQueue();
 	}
 	void Update() {
-		auto d3dlist = list[1]->GetCommandListPtr();
+		auto frameIndex = swapchain->GetBackBufferIndex();
+		auto d3dlist = list[frameIndex]->GetCommandListPtr();
 		auto d3dqueue = queue->GetCommandQueuePtr();
+		auto viewport = CD3DX12_VIEWPORT(0.f, 0.f, width, height);
+		auto scissorRect = CD3DX12_RECT(0, 0, width, height);
 		ID3D12CommandList* pLists[1] = { d3dlist };
-		list->Reset(pso);
+		list[frameIndex]->Reset(pso);
 
+
+		d3dlist->SetGraphicsRootSignature(rootsignature->GetRootSignaturePtr());
+		d3dlist->RSSetViewports(1, &viewport);
+		d3dlist->RSSetScissorRects(1, &scissorRect);
 		d3dlist->Close();
 		d3dqueue->ExecuteCommandLists(1, pLists);
 		swapchain->Present();
@@ -69,7 +76,9 @@ public:
 	void Release() {
 		FCCS::RHI::DestroyRHIObject(device);
 		FCCS::RHI::DestroyRHIObject(swapchain);
-		FCCS::RHI::DestroyRHIObject(list);
+		for (unsigned i = 0; i < bufferCount; ++i) {
+			FCCS::RHI::DestroyRHIObject(list[i]);
+		}
 		FCCS::RHI::DestroyRHIObject(rootsignature);
 		FCCS::RHI::DestroyRHIObject(pso);
 		FCCS::RHI::DestroyRHIObject(vs);
