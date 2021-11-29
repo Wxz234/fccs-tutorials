@@ -45,6 +45,7 @@ public:
 		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 		psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 		psoDesc.SampleDesc.Count = 1;
+		pso = device->CreateGraphicsPSO(&psoDesc);
 
 		float m_aspectRatio = static_cast<float>(width) / height;
 		float triangleVertices[3][4] = {
@@ -55,6 +56,7 @@ public:
 		buffer = device->CreateStaticBuffer(triangleVertices, sizeof(triangleVertices));
 
 		queue = device->GetDefaultCommandQueue();
+		vertexBufferView = buffer->GetVertexBufferView(16, 48);
 	}
 	void Update() {
 		auto frameIndex = swapchain->GetBackBufferIndex();
@@ -72,11 +74,17 @@ public:
 		auto rtv = swapchain->GetRTV(frameIndex);
 		auto dsv = swapchain->GetDSV();
 		d3dlist->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
-		// Record commands.
-
-		d3dlist->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+		
+		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(swapchain->GetResource(frameIndex), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		d3dlist->ResourceBarrier(1, &barrier);
 		const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 		d3dlist->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+		d3dlist->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+		d3dlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		d3dlist->IASetVertexBuffers(0, 1, &vertexBufferView);
+		d3dlist->DrawInstanced(3, 1, 0, 0);
+		barrier = CD3DX12_RESOURCE_BARRIER::Transition(swapchain->GetResource(frameIndex), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+		d3dlist->ResourceBarrier(1, &barrier);
 		d3dlist->Close();
 		d3dqueue->ExecuteCommandLists(1, pLists);
 		swapchain->Present();
@@ -105,6 +113,8 @@ public:
 	FCCS::RHI::Blob* vs = nullptr;
 	FCCS::RHI::Blob* ps = nullptr;
 	FCCS::RHI::StaticBuffer* buffer = nullptr;
+
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 };
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
