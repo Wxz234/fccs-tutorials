@@ -11,7 +11,7 @@ namespace FCCS {
 			virtual ~RHIObject() {}
 		};
 
-        struct RootSignature : public RHIObject {
+		struct RootSignature : public RHIObject {
 			virtual ID3D12RootSignature* GetRootSignaturePtr() const = 0;
 		};
 
@@ -37,7 +37,7 @@ namespace FCCS {
 		};
 
 		struct CommandList : public RHIObject {
-			virtual void Reset(PSO *pso) = 0;
+			virtual void Reset(PSO* pso) = 0;
 			virtual ID3D12GraphicsCommandList* GetCommandListPtr() const = 0;
 		};
 
@@ -63,6 +63,7 @@ namespace FCCS {
 			virtual uint32 GetBackBufferIndex()const = 0;
 			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRTV(uint32 n) = 0;
 			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() = 0;
+			virtual ID3D12Resource* GetResource(uint32 n) = 0;
 			virtual IDXGISwapChain* GetSwapChainPtr() const = 0;
 		};
 
@@ -70,7 +71,7 @@ namespace FCCS {
 			virtual ID3DBlob* GetBlobPtr() const = 0;
 		};
 
-		FCCS_API bool CreateDeviceAndSwapChain(const FCCS_SWAP_CHAIN_DESC* desc, Device **ppDevice, SwapChain **ppSwapchain);
+		FCCS_API bool CreateDeviceAndSwapChain(const FCCS_SWAP_CHAIN_DESC* desc, Device** ppDevice, SwapChain** ppSwapchain);
 		FCCS_API void DestroyRHIObject(RHIObject* obj);
 		FCCS_API Blob* CompileShaderFromFile(const wchar_t* pFileName, const char* pEntrypoint, const char* pTarget);
 	}

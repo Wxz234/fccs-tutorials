@@ -69,6 +69,14 @@ public:
 		d3dlist->SetGraphicsRootSignature(rootsignature->GetRootSignaturePtr());
 		d3dlist->RSSetViewports(1, &viewport);
 		d3dlist->RSSetScissorRects(1, &scissorRect);
+		auto rtv = swapchain->GetRTV(frameIndex);
+		auto dsv = swapchain->GetDSV();
+		d3dlist->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
+		// Record commands.
+
+		d3dlist->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+		const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+		d3dlist->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
 		d3dlist->Close();
 		d3dqueue->ExecuteCommandLists(1, pLists);
 		swapchain->Present();
