@@ -118,7 +118,8 @@
       <AdditionalLibraryDirectories>../3rd/FCCS/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "..\3rd\FCCS\lib\FCCS.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "..\3rd\FCCS\lib\FCCS.dll" "$(OutDir)"
+xcopy /y /d "shader.hlsl" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,7 +142,8 @@
       <AdditionalLibraryDirectories>../3rd/FCCS/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "..\3rd\FCCS\lib\FCCS.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "..\3rd\FCCS\lib\FCCS.dll" "$(OutDir)"
+xcopy /y /d "shader.hlsl" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
