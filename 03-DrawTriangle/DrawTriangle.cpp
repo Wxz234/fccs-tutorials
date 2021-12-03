@@ -23,8 +23,8 @@ public:
 		}
 		queue = device->GetDefaultCommandQueue();
 
-		vs = FCCS::RHI::CompileShaderFromFile(L"shader.hlsl", "VSMain", "vs_5_1");
-		ps = FCCS::RHI::CompileShaderFromFile(L"shader.hlsl", "PSMain", "ps_5_1");
+		vs = FCCS::RHI::CompileShaderFromFile(L"DrawTriangle.hlsl", "VSMain", "vs_5_1");
+		ps = FCCS::RHI::CompileShaderFromFile(L"DrawTriangle.hlsl", "PSMain", "ps_5_1");
 
 		rootsignature = device->CreateRootSignature(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
