@@ -9,7 +9,6 @@ public:
 	Context(HWND hwnd) : hwnd(hwnd) {}
 
 	void Initialize() {
-
 		FCCS::FCCS_SWAP_CHAIN_DESC desc{};
 		desc.Width = width;
 		desc.Height = height;
@@ -56,8 +55,9 @@ public:
 		buffer = device->CreateStaticBuffer(triangleVertices, sizeof(triangleVertices));
 
 		queue = device->GetDefaultCommandQueue();
-		vertexBufferView = buffer->GetVertexBufferView(16, 48);
+		vertexBufferView = buffer->GetVertexBufferView(4 * sizeof(float), 12 * sizeof(float));
 	}
+
 	void Update() {
 		auto frameIndex = swapchain->GetBackBufferIndex();
 		auto d3dlist = list[frameIndex]->GetCommandListPtr();
@@ -66,7 +66,6 @@ public:
 		auto scissorRect = CD3DX12_RECT(0, 0, width, height);
 		ID3D12CommandList* pLists[1] = { d3dlist };
 		list[frameIndex]->Reset(pso);
-
 
 		d3dlist->SetGraphicsRootSignature(rootsignature->GetRootSignaturePtr());
 		d3dlist->RSSetViewports(1, &viewport);
