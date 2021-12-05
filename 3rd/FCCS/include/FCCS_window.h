@@ -10,6 +10,7 @@ namespace FCCS {
 
 	struct Window
 	{
+		virtual void Release() = 0;
 		virtual uint32 GetWidth() const = 0;
 		virtual uint32 GetHeight() const = 0;
 		virtual HWND GetHWND() const = 0;
@@ -17,5 +18,4 @@ namespace FCCS {
 	};
 
 	FCCS_API Window* CreateWindowExW(const wchar_t* title, uint32 width, uint32 height);
-	FCCS_API void DestroyWindow(Window* window);
 }

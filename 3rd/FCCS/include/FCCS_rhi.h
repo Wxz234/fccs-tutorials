@@ -8,7 +8,7 @@ namespace FCCS {
 	namespace RHI {
 
 		struct RHIObject {
-			virtual ~RHIObject() {}
+			virtual void Release() = 0;
 		};
 
         struct RootSignature : public RHIObject {
@@ -72,7 +72,6 @@ namespace FCCS {
 		};
 
 		FCCS_API bool CreateDeviceAndSwapChain(const FCCS_SWAP_CHAIN_DESC* desc, Device **ppDevice, SwapChain **ppSwapchain);
-		FCCS_API void DestroyRHIObject(RHIObject* obj);
 		FCCS_API Blob* CompileShaderFromFile(const wchar_t* pFileName, const char* pEntrypoint, const char* pTarget);
 	}
 }
