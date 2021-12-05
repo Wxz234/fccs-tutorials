@@ -22,8 +22,8 @@ public:
 		}
 		queue = device->GetDefaultCommandQueue();
 
-		vs = FCCS::RHI::CompileShaderFromFile(L"PostProcess.hlsl", "VSMain", "vs_5_1");
-		ps = FCCS::RHI::CompileShaderFromFile(L"PostProcess.hlsl", "PSMain", "ps_5_1");
+		FCCS::RHI::Blob* vs = FCCS::RHI::CompileShaderFromFile(L"PostProcess.hlsl", "VSMain", "vs_5_1");
+		FCCS::RHI::Blob* ps = FCCS::RHI::CompileShaderFromFile(L"PostProcess.hlsl", "PSMain", "ps_5_1");
 
 		rootsignature = device->CreateRootSignature(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
@@ -45,6 +45,9 @@ public:
 		psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 		psoDesc.SampleDesc.Count = 1;
 		pso = device->CreateGraphicsPSO(&psoDesc);
+
+		vs->Release();
+		ps->Release();
 
 		float m_aspectRatio = static_cast<float>(width) / height;
 		float triangleVertices[3][4] = {
@@ -89,16 +92,14 @@ public:
 		swapchain->Present();
 	}
 	void Release() {
-		FCCS::RHI::DestroyRHIObject(device);
-		FCCS::RHI::DestroyRHIObject(swapchain);
+		device->Release();
+		swapchain->Release();
 		for (unsigned i = 0; i < bufferCount; ++i) {
-			FCCS::RHI::DestroyRHIObject(list[i]);
+			list[i]->Release();
 		}
-		FCCS::RHI::DestroyRHIObject(rootsignature);
-		FCCS::RHI::DestroyRHIObject(pso);
-		FCCS::RHI::DestroyRHIObject(vs);
-		FCCS::RHI::DestroyRHIObject(ps);
-		FCCS::RHI::DestroyRHIObject(buffer);
+		rootsignature->Release();
+		pso->Release();
+		buffer->Release();
 	}
 
 	HWND hwnd;
@@ -109,8 +110,6 @@ public:
 	FCCS::RHI::CommandQueue* queue = nullptr;
 	FCCS::RHI::RootSignature* rootsignature = nullptr;
 	FCCS::RHI::PSO* pso = nullptr;
-	FCCS::RHI::Blob* vs = nullptr;
-	FCCS::RHI::Blob* ps = nullptr;
 	FCCS::RHI::StaticBuffer* buffer = nullptr;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};

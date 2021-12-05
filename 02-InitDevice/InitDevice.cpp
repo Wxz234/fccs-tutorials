@@ -21,8 +21,8 @@ public:
 		swapchain->Present();
 	}
 	void Release() {
-		FCCS::RHI::DestroyRHIObject(device);
-		FCCS::RHI::DestroyRHIObject(swapchain);
+		device->Release();
+		swapchain->Release();
 	}
 
 	HWND hwnd;
