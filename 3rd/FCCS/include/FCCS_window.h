@@ -8,9 +8,9 @@ namespace FCCS {
 		virtual void Release() = 0;
 	};
 
-	struct Window
+	struct Window : public FObject
 	{
-		virtual void Release() = 0;
+
 		virtual uint32 GetWidth() const = 0;
 		virtual uint32 GetHeight() const = 0;
 		virtual HWND GetHWND() const = 0;

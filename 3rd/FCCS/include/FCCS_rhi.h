@@ -7,19 +7,15 @@
 namespace FCCS {
 	namespace RHI {
 
-		struct RHIObject {
-			virtual void Release() = 0;
-		};
-
-        struct RootSignature : public RHIObject {
+        struct RootSignature : public FObject {
 			virtual ID3D12RootSignature* GetRootSignaturePtr() const = 0;
 		};
 
-		struct GPUResource : public RHIObject {
+		struct GPUResource : public FObject {
 			virtual ID3D12Resource* GetResourcePtr() const = 0;
 		};
 
-		struct PSO :public RHIObject {
+		struct PSO :public FObject {
 			virtual ID3D12PipelineState* GetPipelineStatePtr() const = 0;
 		};
 
@@ -36,17 +32,17 @@ namespace FCCS {
 			virtual D3D12_INDEX_BUFFER_VIEW GetIndexBufferView(uint32 size, DXGI_FORMAT format) = 0;
 		};
 
-		struct CommandList : public RHIObject {
+		struct CommandList : public FObject {
 			virtual void Reset(PSO *pso) = 0;
 			virtual ID3D12GraphicsCommandList* GetCommandListPtr() const = 0;
 		};
 
-		struct CommandQueue : public RHIObject {
+		struct CommandQueue : public FObject {
 			virtual void WaitIdle() = 0;
 			virtual ID3D12CommandQueue* GetCommandQueuePtr() const = 0;
 		};
 
-		struct Device : public RHIObject {
+		struct Device : public FObject {
 			virtual Buffer* CreateBuffer(uint32 size) = 0;
 			virtual StaticBuffer* CreateStaticBuffer(void* ptr, uint32 size) = 0;
 			virtual CommandQueue* CreateCommandQueue(D3D12_COMMAND_LIST_TYPE type) = 0;
@@ -58,7 +54,7 @@ namespace FCCS {
 			virtual CommandQueue* GetDefaultCommandQueue() const = 0;
 		};
 
-		struct SwapChain : public RHIObject {
+		struct SwapChain : public FObject {
 			virtual void Present() = 0;
 			virtual uint32 GetBackBufferIndex()const = 0;
 			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRTV(uint32 n) = 0;
@@ -67,7 +63,7 @@ namespace FCCS {
 			virtual IDXGISwapChain* GetSwapChainPtr() const = 0;
 		};
 
-		struct Blob : public RHIObject {
+		struct Blob : public FObject {
 			virtual ID3DBlob* GetBlobPtr() const = 0;
 		};
 
