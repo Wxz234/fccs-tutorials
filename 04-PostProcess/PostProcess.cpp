@@ -20,7 +20,6 @@ public:
 		for(unsigned i = 0;i < bufferCount; ++i) {
 			list[i] = device->CreateCommandList(D3D12_COMMAND_LIST_TYPE_DIRECT);
 		}
-		queue = device->GetDefaultCommandQueue();
 
 		FCCS::RHI::Blob* vs = FCCS::RHI::CompileShaderFromFile(L"PostProcess.hlsl", "VSMain", "vs_5_1");
 		FCCS::RHI::Blob* ps = FCCS::RHI::CompileShaderFromFile(L"PostProcess.hlsl", "PSMain", "ps_5_1");
@@ -57,14 +56,13 @@ public:
 		};
 		buffer = device->CreateStaticBuffer(triangleVertices, sizeof(triangleVertices));
 
-		queue = device->GetDefaultCommandQueue();
 		vertexBufferView = buffer->GetVertexBufferView(4 * sizeof(float), 12 * sizeof(float));
 	}
 
 	void Update() {
 		auto frameIndex = swapchain->GetBackBufferIndex();
 		auto d3dlist = list[frameIndex]->GetCommandListPtr();
-		auto d3dqueue = queue->GetCommandQueuePtr();
+		auto d3dqueue = device->GetDefaultCommandQueue()->GetCommandQueuePtr();
 		auto viewport = CD3DX12_VIEWPORT(0.f, 0.f, width, height);
 		auto scissorRect = CD3DX12_RECT(0, 0, width, height);
 		ID3D12CommandList* pLists[1] = { d3dlist };
@@ -107,7 +105,6 @@ public:
 	FCCS::RHI::Device* device = nullptr;
 	FCCS::RHI::SwapChain* swapchain = nullptr;
 	FCCS::RHI::CommandList* list[bufferCount] = {};
-	FCCS::RHI::CommandQueue* queue = nullptr;
 	FCCS::RHI::RootSignature* rootsignature = nullptr;
 	FCCS::RHI::PSO* pso = nullptr;
 	FCCS::RHI::StaticBuffer* buffer = nullptr;
