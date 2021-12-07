@@ -23,6 +23,7 @@ namespace FCCS {
 			virtual uint32 GetWidth() const = 0;
 			virtual uint32 GetHeight() const = 0;
 			virtual DXGI_FORMAT GetFormat() const = 0;
+			virtual D3D12_GPU_DESCRIPTOR_HANDLE GetShaderResourceView() const = 0;
 		};
 
 		struct Buffer : public GPUResource {
@@ -61,8 +62,8 @@ namespace FCCS {
 		struct SwapChain : public FObject {
 			virtual void Present() = 0;
 			virtual uint32 GetBackBufferIndex()const = 0;
-			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRTV(uint32 n) = 0;
-			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDSV() = 0;
+			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView(uint32 n) = 0;
+			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() = 0;
 			virtual ID3D12Resource* GetResource(uint32 n) const = 0;
 			virtual IDXGISwapChain* GetSwapChainPtr() const = 0;
 		};
