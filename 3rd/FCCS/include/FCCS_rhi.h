@@ -19,7 +19,11 @@ namespace FCCS {
 			virtual ID3D12PipelineState* GetPipelineStatePtr() const = 0;
 		};
 
-		struct Texture : public GPUResource {};
+		struct Texture : public GPUResource {
+			virtual uint32 GetWidth() const = 0;
+			virtual uint32 GetHeight() const = 0;
+			virtual DXGI_FORMAT GetFormat() const = 0;
+		};
 
 		struct Buffer : public GPUResource {
 			virtual void Update(void* ptr, uint32 size) = 0;
