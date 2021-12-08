@@ -28,13 +28,13 @@ namespace FCCS {
 
 		struct Buffer : public GPUResource {
 			virtual void Update(void* ptr, uint32 size) = 0;
-			virtual D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView(uint32 stride, uint32 size) = 0;
-			virtual D3D12_INDEX_BUFFER_VIEW GetIndexBufferView(uint32 size, DXGI_FORMAT format) = 0;
+			virtual D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView(uint32 stride, uint32 size) const = 0;
+			virtual D3D12_INDEX_BUFFER_VIEW GetIndexBufferView(uint32 size, DXGI_FORMAT format) const = 0;
 		};
 
 		struct StaticBuffer : public GPUResource {
-			virtual D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView(uint32 stride, uint32 size) = 0;
-			virtual D3D12_INDEX_BUFFER_VIEW GetIndexBufferView(uint32 size, DXGI_FORMAT format) = 0;
+			virtual D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView(uint32 stride, uint32 size) const = 0;
+			virtual D3D12_INDEX_BUFFER_VIEW GetIndexBufferView(uint32 size, DXGI_FORMAT format) const = 0;
 		};
 
 		struct CommandList : public FObject {
@@ -61,9 +61,9 @@ namespace FCCS {
 
 		struct SwapChain : public FObject {
 			virtual void Present() = 0;
-			virtual uint32 GetBackBufferIndex()const = 0;
-			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView(uint32 n) = 0;
-			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() = 0;
+			virtual uint32 GetBackBufferIndex() const = 0;
+			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView(uint32 n) const = 0;
+			virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const = 0;
 			virtual ID3D12Resource* GetResource(uint32 n) const = 0;
 			virtual IDXGISwapChain* GetSwapChainPtr() const = 0;
 		};
