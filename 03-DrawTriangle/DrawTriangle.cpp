@@ -71,8 +71,8 @@ public:
 		d3dlist->SetGraphicsRootSignature(rootsignature->GetRootSignaturePtr());
 		d3dlist->RSSetViewports(1, &viewport);
 		d3dlist->RSSetScissorRects(1, &scissorRect);
-		auto rtv = swapchain->GetRTV(frameIndex);
-		auto dsv = swapchain->GetDSV();
+		auto rtv = swapchain->GetRenderTargetView(frameIndex);
+		auto dsv = swapchain->GetDepthStencilView();
 		d3dlist->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
 
 		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(swapchain->GetResource(frameIndex), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
