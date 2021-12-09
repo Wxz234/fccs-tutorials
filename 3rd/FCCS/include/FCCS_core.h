@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <unknwn.h>
 namespace FCCS {
 	using int8 = int8_t;
 	using int16 = int16_t;
@@ -23,6 +24,14 @@ namespace FCCS {
 	struct FObject {
 		virtual void Release() = 0;
 	};
+	struct FRHIObejct :  public FObject {
+		virtual IUnknown* GetNativePtr() const = 0;
+	};
 
 	FCCS_API void DestroyObject(FObject* object);
+
+	template <typename T> 
+	inline T* Cast(void* p) {
+		return static_cast<T*>(p);
+	}
 }
