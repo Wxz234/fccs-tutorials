@@ -9,7 +9,7 @@ namespace FCCS {
 	};
 
 	struct PostProcess : public FObject {
-		virtual void Process(ID3D12GraphicsCommandList* commandList) = 0;
+		virtual void Process(RHI::CommandList* commandList) = 0;
 	};
 
 	FCCS_API PostProcess* CreatePostProcess(RHI::Device* device, BasicPostProcess effect);
