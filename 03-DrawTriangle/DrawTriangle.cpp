@@ -90,14 +90,14 @@ public:
 		swapchain->Present();
 	}
 	void Release() {
-		device->Release();
-		swapchain->Release();
+		FCCS::DestroyObject(device);
+		FCCS::DestroyObject(swapchain);
+		FCCS::DestroyObject(rootsignature);
+		FCCS::DestroyObject(pso);
+		FCCS::DestroyObject(buffer);
 		for (unsigned i = 0; i < bufferCount; ++i) {
-			list[i]->Release();
+			FCCS::DestroyObject(list[i]);
 		}
-		rootsignature->Release();
-		pso->Release();
-		buffer->Release();
 	}
 
 	HWND hwnd;
