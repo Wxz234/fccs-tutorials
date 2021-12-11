@@ -15,20 +15,24 @@ public:
 		desc.BufferCount = bufferCount;
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		desc.DepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		FCCS::RHI::CreateDeviceAndSwapChain(&desc, &device, &swapchain);
+		device = FCCS::CreateDevice(0);
+		queue = device->CreateCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+		swapchain = FCCS::CreateSwapChain(queue, &desc);
 	}
 	void Update() {
-		swapchain->Present();
+		swapchain->Present(1);
 	}
 	void Release() {
-		device->Release();
-		swapchain->Release();
+		FCCS::DestroyObject(device);
+		FCCS::DestroyObject(queue);
+		FCCS::DestroyObject(swapchain);
 	}
 
 	HWND hwnd;
 
-	FCCS::RHI::Device* device = nullptr;
-	FCCS::RHI::SwapChain* swapchain = nullptr;
+	FCCS::RHIDevice* device = nullptr;
+	FCCS::CommandQueue* queue = nullptr;
+	FCCS::SwapChain* swapchain = nullptr;
 };
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {

@@ -3,14 +3,13 @@
 #include "FCCS_rhi.h"
 namespace FCCS {
 
-	enum class BasicPostProcess
+	enum class PostProcessEffect
 	{
 		Copy = 0x1,
 	};
 
 	struct PostProcess : public FObject {
-		virtual void Process(RHI::CommandList* commandList) = 0;
 	};
 
-	FCCS_API PostProcess* CreatePostProcess(RHI::Device* device, BasicPostProcess effect);
+	FCCS_API PostProcess* CreatePostProcess(RHIDevice* device, PostProcessEffect effect);
 }
