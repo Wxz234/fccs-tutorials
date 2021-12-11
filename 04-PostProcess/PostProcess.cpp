@@ -65,6 +65,8 @@ public:
 		buffer = device->CreateBuffer(sizeof(triangleVertices));
 		buffer->Update(triangleVertices, sizeof(triangleVertices));
 		vertexBufferView = buffer->GetVertexBufferView(4 * sizeof(float), 12 * sizeof(float));
+		auto pp = swapchain->GetTexture(0);
+
 	}
 
 	void Update() {
@@ -82,7 +84,6 @@ public:
 		auto rtv = swapchain->GetRenderTargetView(frameIndex);
 		auto dsv = swapchain->GetDepthStencilView();
 		d3dlist->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
-
 
 		auto d3dswapchain = FCCS::Cast<IDXGISwapChain>((swapchain->GetNativePtr()));
 		Microsoft::WRL::ComPtr<ID3D12Resource> _backbuffer;

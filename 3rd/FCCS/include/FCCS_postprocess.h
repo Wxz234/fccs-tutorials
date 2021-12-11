@@ -10,7 +10,7 @@ namespace FCCS {
 
 	struct PostProcess : public FObject {
 		virtual void SetTexture(Texture* texture) = 0;
-		virtual void Process(CommandList *list) = 0
+		virtual void Process(CommandList* list) = 0;
 	};
 
 	FCCS_API PostProcess* CreatePostProcess(RHIDevice* device, PostProcessEffect effect);
