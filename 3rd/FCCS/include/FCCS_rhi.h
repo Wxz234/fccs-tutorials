@@ -4,6 +4,8 @@
 #include <dxgi1_6.h>
 namespace FCCS {
 
+	struct RootSignature : public FRHIObejct {};
+
 	struct Buffer : public FRHIObejct {
 		virtual void Update(void* ptr, uint32 size) = 0;
 		virtual D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView(uint32 stride, uint32 size) = 0;
@@ -27,6 +29,7 @@ namespace FCCS {
 		virtual Texture* CreateDDSTextureFromFile(const wchar_t* szFileName) = 0;
 		virtual CommandQueue* CreateCommandQueue(D3D12_COMMAND_LIST_TYPE type) = 0;
 		virtual CommandList* CreateCommandList(D3D12_COMMAND_LIST_TYPE type) = 0;
+		virtual RootSignature* CreateRootSignature(const D3D12_ROOT_SIGNATURE_DESC* desc) = 0;
 	};
 
 	struct FCCS_SWAP_CHAIN_DESC {
