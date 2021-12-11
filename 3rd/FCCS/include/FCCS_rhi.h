@@ -48,6 +48,7 @@ namespace FCCS {
 		virtual uint32 GetCurrentBackBufferIndex() const = 0;
 		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView(uint32 n) const = 0;
 		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const = 0;
+		virtual Texture* GetTexture(uint32 n) const = 0;
 	};
 
 	struct Blob : public FRHIObejct {
