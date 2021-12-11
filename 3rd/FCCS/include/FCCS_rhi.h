@@ -5,6 +5,7 @@
 namespace FCCS {
 
 	struct RootSignature : public FRHIObejct {};
+	struct PSO : public FRHIObejct {};
 
 	struct Buffer : public FRHIObejct {
 		virtual void Update(void* ptr, uint32 size) = 0;
@@ -30,6 +31,7 @@ namespace FCCS {
 		virtual CommandQueue* CreateCommandQueue(D3D12_COMMAND_LIST_TYPE type) = 0;
 		virtual CommandList* CreateCommandList(D3D12_COMMAND_LIST_TYPE type) = 0;
 		virtual RootSignature* CreateRootSignature(const D3D12_ROOT_SIGNATURE_DESC* desc) = 0;
+		virtual PSO* CreateGraphicsPSO(const D3D12_GRAPHICS_PIPELINE_STATE_DESC* pDesc) = 0;
 	};
 
 	struct FCCS_SWAP_CHAIN_DESC {
