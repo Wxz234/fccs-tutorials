@@ -65,6 +65,8 @@ public:
 		buffer = device->CreateBuffer(sizeof(triangleVertices));
 		buffer->Update(triangleVertices, sizeof(triangleVertices));
 		vertexBufferView = buffer->GetVertexBufferView(4 * sizeof(float), 12 * sizeof(float));
+
+
 	}
 
 	void Update() {
