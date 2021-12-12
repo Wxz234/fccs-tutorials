@@ -9,12 +9,12 @@ namespace FCCS {
 
 	struct Buffer : public FRHIObejct {
 		virtual void Update(void* ptr, uint32 size) = 0;
-		virtual D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView(uint32 stride, uint32 size) const = 0;
-		virtual D3D12_INDEX_BUFFER_VIEW GetIndexBufferView(uint32 size, DXGI_FORMAT format) const = 0;
+		virtual D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView(uint32 stride, uint32 size) = 0;
+		virtual D3D12_INDEX_BUFFER_VIEW GetIndexBufferView(uint32 size, DXGI_FORMAT format) = 0;
 	};
 
 	struct Texture : public FRHIObejct {
-		virtual D3D12_GPU_DESCRIPTOR_HANDLE GetShaderResourceView() const = 0;
+		virtual D3D12_GPU_DESCRIPTOR_HANDLE GetShaderResourceView() = 0;
 	};
 
 	struct CommandList : public FRHIObejct {
@@ -46,9 +46,9 @@ namespace FCCS {
 	struct SwapChain : public FRHIObejct {
 		virtual void Present(uint32 sync) = 0;
 		virtual uint32 GetCurrentBackBufferIndex() const = 0;
-		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView(uint32 n) const = 0;
-		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const = 0;
-		virtual Texture* GetTexture(uint32 n) const = 0;
+		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView(uint32 n) = 0;
+		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() = 0;
+		virtual Texture* GetTexture(uint32 n) = 0;
 	};
 
 	struct Blob : public FRHIObejct {
