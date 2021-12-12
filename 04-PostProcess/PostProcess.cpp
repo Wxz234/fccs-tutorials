@@ -65,8 +65,6 @@ public:
 		buffer = device->CreateBuffer(sizeof(triangleVertices));
 		buffer->Update(triangleVertices, sizeof(triangleVertices));
 		vertexBufferView = buffer->GetVertexBufferView(4 * sizeof(float), 12 * sizeof(float));
-		auto pp = swapchain->GetTexture(0);
-
 	}
 
 	void Update() {
@@ -100,6 +98,7 @@ public:
 		d3dlist->ResourceBarrier(1, &barrier);
 		d3dlist->Close();
 		d3dqueue->ExecuteCommandLists(1, pLists);
+
 		swapchain->Present(1);
 	}
 	void Release() {
