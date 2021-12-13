@@ -7,6 +7,7 @@
 #include "d3dx12.h"
 constexpr unsigned width = 800, height = 600;
 constexpr unsigned bufferCount = 3;
+constexpr DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
 class Context : public FCCS::WindowContext {
 public:
 	Context(HWND hwnd) : hwnd(hwnd) {}
@@ -17,7 +18,7 @@ public:
 		swapchaindesc.Height = height;
 		swapchaindesc.Hwnd = hwnd;
 		swapchaindesc.BufferCount = bufferCount;
-		swapchaindesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		swapchaindesc.Format = format;
 		swapchaindesc.DepthStencilFormat = DXGI_FORMAT_D32_FLOAT;
 		//FCCS::RHI::CreateDeviceAndSwapChain(&desc, &device, &swapchain);
 		device = FCCS::CreateDevice(0);
@@ -48,7 +49,7 @@ public:
 		psoDesc.SampleMask = UINT_MAX;
 		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 		psoDesc.NumRenderTargets = 1;
-		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		psoDesc.RTVFormats[0] = format;
 		psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 		psoDesc.SampleDesc.Count = 1;
 		pso = device->CreateGraphicsPSO(&psoDesc);
@@ -66,7 +67,8 @@ public:
 		buffer->Update(triangleVertices, sizeof(triangleVertices));
 		vertexBufferView = buffer->GetVertexBufferView(4 * sizeof(float), 12 * sizeof(float));
 
-
+		auto tex = CD3DX12_RESOURCE_DESC::Tex2D(format, width, height);
+		texture = device->CreateTexture(&tex, D3D12_RESOURCE_STATE_COMMON);
 	}
 
 	void Update() {
@@ -109,6 +111,7 @@ public:
 		FCCS::DestroyObject(queue);
 		FCCS::DestroyObject(pso);
 		FCCS::DestroyObject(buffer);
+		FCCS::DestroyObject(texture);
 		FCCS::DestroyObject(rootsignature);
 		for (unsigned i = 0; i < bufferCount; ++i) {
 			FCCS::DestroyObject(list[i]);
@@ -124,6 +127,7 @@ public:
 	FCCS::RootSignature* rootsignature = nullptr;
 	FCCS::PSO* pso = nullptr;
 	FCCS::Buffer* buffer = nullptr;
+	FCCS::Texture* texture = nullptr;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 };
