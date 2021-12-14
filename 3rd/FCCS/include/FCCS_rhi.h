@@ -15,6 +15,9 @@ namespace FCCS {
 
 	struct Texture : public FRHIObejct {
 		virtual D3D12_GPU_DESCRIPTOR_HANDLE GetShaderResourceView() = 0;
+		virtual D3D12_GPU_DESCRIPTOR_HANDLE GetUnorderedAccessView() = 0;
+		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView() = 0;
+		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() = 0;
 	};
 
 	struct CommandList : public FRHIObejct {
