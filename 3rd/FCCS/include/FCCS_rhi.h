@@ -31,7 +31,8 @@ namespace FCCS {
 	struct RHIDevice : public FRHIObejct {
 		virtual Buffer* CreateBuffer(uint32 size) = 0;
 		virtual Texture* CreateDDSTextureFromFile(const wchar_t* szFileName) = 0;
-		virtual Texture* CreateTexture(const D3D12_RESOURCE_DESC* desc, D3D12_RESOURCE_STATES state) = 0;
+		virtual Texture* CreateRenderTargetTexture(DXGI_FORMAT format, uint32 width, uint32 height,const D3D12_CLEAR_VALUE *value) = 0;
+		virtual Texture* CreateDepthStencilTexture(DXGI_FORMAT format, uint32 width, uint32 height,const D3D12_CLEAR_VALUE *value) = 0;
 		virtual CommandQueue* CreateCommandQueue(D3D12_COMMAND_LIST_TYPE type) = 0;
 		virtual CommandList* CreateCommandList(D3D12_COMMAND_LIST_TYPE type) = 0;
 		virtual RootSignature* CreateRootSignature(const D3D12_ROOT_SIGNATURE_DESC* desc) = 0;
