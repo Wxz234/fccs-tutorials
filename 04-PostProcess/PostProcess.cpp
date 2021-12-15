@@ -67,8 +67,6 @@ public:
 		buffer->Update(triangleVertices, sizeof(triangleVertices));
 		vertexBufferView = buffer->GetVertexBufferView(4 * sizeof(float), 12 * sizeof(float));
 
-		auto tex = CD3DX12_RESOURCE_DESC::Tex2D(format, width, height);
-		texture = device->CreateTexture(&tex, D3D12_RESOURCE_STATE_COMMON);
 	}
 
 	void Update() {
