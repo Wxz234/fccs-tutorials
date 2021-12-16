@@ -119,6 +119,7 @@ public:
 	FCCS::RootSignature* rootsignature = nullptr;
 	FCCS::PSO* pso = nullptr;
 	FCCS::Buffer* buffer = nullptr;
+	FCCS::Buffer* texture = nullptr;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 };
