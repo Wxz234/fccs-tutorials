@@ -18,7 +18,6 @@ public:
 		swapchaindesc.Hwnd = hwnd;
 		swapchaindesc.BufferCount = bufferCount;
 		swapchaindesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		swapchaindesc.DepthStencilFormat = DXGI_FORMAT_D32_FLOAT;
 		//FCCS::RHI::CreateDeviceAndSwapChain(&desc, &device, &swapchain);
 		device = FCCS::CreateDevice(0);
 		queue = device->CreateCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
@@ -44,7 +43,8 @@ public:
 		psoDesc.PS = CD3DX12_SHADER_BYTECODE(FCCS::Cast<ID3DBlob>(ps->GetNativePtr()));
 		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-		psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+		psoDesc.DepthStencilState.DepthEnable = FALSE;
+		psoDesc.DepthStencilState.StencilEnable = FALSE;
 		psoDesc.SampleMask = UINT_MAX;
 		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 		psoDesc.NumRenderTargets = 1;
@@ -80,9 +80,7 @@ public:
 		d3dlist->RSSetViewports(1, &viewport);
 		d3dlist->RSSetScissorRects(1, &scissorRect);
 		auto rtv = swapchain->GetRenderTargetView(frameIndex);
-		auto dsv = swapchain->GetDepthStencilView();
-		d3dlist->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
-
+		d3dlist->OMSetRenderTargets(1, &rtv, FALSE, nullptr);
 
 		auto d3dswapchain = FCCS::Cast<IDXGISwapChain>((swapchain->GetNativePtr()));
 		Microsoft::WRL::ComPtr<ID3D12Resource> _backbuffer;
@@ -91,7 +89,6 @@ public:
 		d3dlist->ResourceBarrier(1, &barrier);
 		const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 		d3dlist->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-		d3dlist->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 		d3dlist->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		d3dlist->IASetVertexBuffers(0, 1, &vertexBufferView);
 		d3dlist->DrawInstanced(3, 1, 0, 0);

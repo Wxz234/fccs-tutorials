@@ -14,5 +14,5 @@ namespace FCCS {
 		virtual HWND GetHWND() const = 0;
 		virtual int32 Run(WindowContext*) = 0;
 	};
-	FCCS_API Window* CreateWindowExW(const wchar_t* title, uint32 width, uint32 height);
+	FCCS_API Window* CreateWindowExW(const wchar_t* pTitle, uint32 width, uint32 height);
 }
