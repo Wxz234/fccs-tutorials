@@ -15,12 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PostProcess.cpp">
+    <ClCompile Include="DrawTriangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="PostProcess.hlsl">
+    <None Include="DrawTriangle.hlsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

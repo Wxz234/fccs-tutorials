@@ -21,13 +21,13 @@ public:
 		//FCCS::RHI::CreateDeviceAndSwapChain(&desc, &device, &swapchain);
 		device = FCCS::CreateDevice(0);
 		queue = device->CreateCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-		swapchain = FCCS::CreateSwapChain(queue, &swapchaindesc);
+		swapchain = FCCS::CreateSwapChain(queue ,&swapchaindesc);
 		for (unsigned i = 0; i < bufferCount; ++i) {
 			list[i] = device->CreateCommandList(D3D12_COMMAND_LIST_TYPE_DIRECT);
 		}
 
-		FCCS::Blob* vs = FCCS::CompileShaderFromFile(L"PostProcess.hlsl", "VSMain", "vs_5_1");
-		FCCS::Blob* ps = FCCS::CompileShaderFromFile(L"PostProcess.hlsl", "PSMain", "ps_5_1");
+		FCCS::Blob* vs = FCCS::CompileShaderFromFile(L"DrawTriangle.hlsl", "VSMain", "vs_5_1");
+		FCCS::Blob* ps = FCCS::CompileShaderFromFile(L"DrawTriangle.hlsl", "PSMain", "ps_5_1");
 
 		//auto device_ptr = FCCS::Cast<ID3D12Device>(device->GetNativePtr());
 		CD3DX12_ROOT_SIGNATURE_DESC signDesc(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -116,10 +116,9 @@ public:
 	FCCS::SwapChain* swapchain = nullptr;
 	FCCS::CommandQueue* queue = nullptr;
 	FCCS::CommandList* list[bufferCount] = {};
-	FCCS::RootSignature* rootsignature = nullptr;
+	FCCS::RootSignature *rootsignature = nullptr;
 	FCCS::PSO* pso = nullptr;
 	FCCS::Buffer* buffer = nullptr;
-	FCCS::Buffer* texture = nullptr;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 };
