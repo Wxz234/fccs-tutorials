@@ -15,12 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DrawTriangle.cpp">
+    <ClCompile Include="RenderTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DrawTriangle.hlsl">
+    <None Include="RenderTexture.hlsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

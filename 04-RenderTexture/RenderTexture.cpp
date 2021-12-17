@@ -26,8 +26,8 @@ public:
 			list[i] = device->CreateCommandList(D3D12_COMMAND_LIST_TYPE_DIRECT);
 		}
 
-		FCCS::Blob* vs = FCCS::CompileShaderFromFile(L"DrawTriangle.hlsl", "VSMain", "vs_5_1");
-		FCCS::Blob* ps = FCCS::CompileShaderFromFile(L"DrawTriangle.hlsl", "PSMain", "ps_5_1");
+		FCCS::Blob* vs = FCCS::CompileShaderFromFile(L"RenderTexture.hlsl", "VSMain", "vs_5_1");
+		FCCS::Blob* ps = FCCS::CompileShaderFromFile(L"RenderTexture.hlsl", "PSMain", "ps_5_1");
 
 		//auto device_ptr = FCCS::Cast<ID3D12Device>(device->GetNativePtr());
 		CD3DX12_ROOT_SIGNATURE_DESC signDesc(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
