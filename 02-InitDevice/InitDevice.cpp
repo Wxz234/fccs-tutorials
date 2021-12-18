@@ -4,7 +4,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	auto window = FCCS::CreateWindowExW(L"fccs", 800, 600);
 	auto renderer = FCCS::CreateRenderer(window);
 	while (window->IsRun()) {
-	
+		renderer->Present();
 	}
 	FCCS::DestroyObject(renderer);
 	FCCS::DestroyObject(window);

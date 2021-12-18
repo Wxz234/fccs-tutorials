@@ -23,7 +23,7 @@ namespace FCCS {
 		virtual void Release() = 0;
 	};
 	struct FRHIObejct :  public FObject {
-		virtual IUnknown* GetNativePtr() const = 0;
+		virtual IUnknown* GetNativePtr() const noexcept = 0;
 	};
 
 	FCCS_API void DestroyObject(FObject* object);
