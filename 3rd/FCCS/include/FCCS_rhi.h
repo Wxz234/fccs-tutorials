@@ -17,6 +17,7 @@ namespace FCCS {
 	};
 
 	struct CommandList : public FRHIObejct {
+		virtual ID3D12CommandAllocator* GetAllocator() const noexcept = 0;
 		virtual void Close() = 0;
 	};
 	struct CommandQueue : public FRHIObejct {
