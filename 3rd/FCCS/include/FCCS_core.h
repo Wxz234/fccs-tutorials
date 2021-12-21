@@ -20,13 +20,13 @@ namespace FCCS {
 	using uint64 = uint64_t;
 
 	struct FObject {
-		virtual void Release() = 0;
+		virtual ~FObject();
 	};
-	struct FRHIObejct :  public FObject {
-		virtual IUnknown* GetNativePtr() const = 0;
+	struct FRHIObejct : public FObject {
+		virtual IUnknown* GetNativePtr() const noexcept = 0;
 	};
 
-	FCCS_API void DestroyObject(FObject* object);
+	FCCS_API void DestroyFObject(FObject* object);
 
 	template <typename T> 
 	inline T* Cast(void* p) {

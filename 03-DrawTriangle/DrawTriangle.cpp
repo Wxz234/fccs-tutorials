@@ -21,7 +21,7 @@ public:
 		//FCCS::RHI::CreateDeviceAndSwapChain(&desc, &device, &swapchain);
 		device = FCCS::CreateDevice(0);
 		queue = device->CreateCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-		swapchain = FCCS::CreateSwapChain(queue ,&swapchaindesc);
+		swapchain = FCCS::CreateSwapChain(queue, &swapchaindesc);
 		for (unsigned i = 0; i < bufferCount; ++i) {
 			list[i] = device->CreateCommandList(D3D12_COMMAND_LIST_TYPE_DIRECT);
 		}
@@ -116,7 +116,7 @@ public:
 	FCCS::SwapChain* swapchain = nullptr;
 	FCCS::CommandQueue* queue = nullptr;
 	FCCS::CommandList* list[bufferCount] = {};
-	FCCS::RootSignature *rootsignature = nullptr;
+	FCCS::RootSignature* rootsignature = nullptr;
 	FCCS::PSO* pso = nullptr;
 	FCCS::Buffer* buffer = nullptr;
 
