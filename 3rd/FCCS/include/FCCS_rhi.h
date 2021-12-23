@@ -6,19 +6,15 @@
 namespace FCCS {
 
 	struct GpuResource : public FRHIObejct {
-		virtual D3D12_GPU_VIRTUAL_ADDRESS GetAddress() const noexcept = 0;
+
 	};
 
 	struct Texture : public GpuResource {
 		
 	};
 
-	struct Buffer : public GpuResource {
-		virtual void Update() = 0;
-	};
-
 	struct CommandAllocator : public FRHIObejct {
-		virtual void Reset() = 0;
+	
 	};
 
 	struct CommandList : public FRHIObejct {

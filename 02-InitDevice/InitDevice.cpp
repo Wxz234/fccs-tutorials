@@ -8,10 +8,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	auto device = FCCS::CreateDevice(0);
 	auto swapchain = FCCS::CreateSwapChain(device, window);
 	auto _sc = FCCS::Cast<IDXGISwapChain>(swapchain->GetNativePtr());
+
+
 	while (window->IsRun()) {
-
-		_sc->Present(1, 0);
-
+		swapchain->Present(1);
 	}
 	FCCS::DestroyFObject(swapchain);
 	FCCS::DestroyFObject(device);
