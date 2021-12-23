@@ -2,19 +2,23 @@
 #include "FCCS_core.h"
 #include "FCCS_window.h"
 #include <d3d12.h>
-#include <dxgi1_6.h>
+#include <dxgi.h>
 namespace FCCS {
 
 	struct GpuResource : public FRHIObejct {
-
+		virtual D3D12_GPU_VIRTUAL_ADDRESS GetAddress() const noexcept = 0;
 	};
 
 	struct Texture : public GpuResource {
 		
 	};
 
+	struct Buffer : public GpuResource {
+		virtual void Update() = 0;
+	};
+
 	struct CommandAllocator : public FRHIObejct {
-	
+		virtual void Reset() = 0;
 	};
 
 	struct CommandList : public FRHIObejct {
@@ -28,6 +32,9 @@ namespace FCCS {
 	};
 
 	struct Device : public FRHIObejct {
+		virtual CommandAllocator* CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE type) = 0;
+		virtual CommandList* CreateCommandList(D3D12_COMMAND_LIST_TYPE type) = 0;
+		virtual CommandQueue* CreateCommanQueue(D3D12_COMMAND_LIST_TYPE type) = 0;
 		virtual CommandQueue* GetRenderCommandQueue() const noexcept = 0;
 	};
 
