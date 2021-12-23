@@ -120,8 +120,7 @@
       <AdditionalLibraryDirectories>../3rd/FCCS/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "..\3rd\FCCS\lib\FCCS.dll" "$(OutDir)"
-xcopy /y /d "DrawTriangle.hlsl" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "..\3rd\FCCS\lib\FCCS.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,11 +149,6 @@ xcopy /y /d "DrawTriangle.hlsl" "$(OutDir)"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DrawTriangle.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DrawTriangle.hlsl">
-      <FileType>Document</FileType>
-    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
