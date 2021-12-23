@@ -7,11 +7,12 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	auto window = FCCS::CreateFCCSWindow(L"fccs", width, height);
 	auto device = FCCS::CreateDevice(0);
 	auto swapchain = FCCS::CreateSwapChain(device, window);
+
 	while (window->IsRun()) {
-		swapchain->Present(1);
+		swapchain->Present(0);
 	}
-	FCCS::DestroyFObject(device);
 	FCCS::DestroyFObject(swapchain);
+	FCCS::DestroyFObject(device);
 	FCCS::DestroyFObject(window);
 	return 0;
 }
