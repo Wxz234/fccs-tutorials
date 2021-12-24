@@ -78,11 +78,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		{ -0.25f, -0.25f * ratio, 0.0f,1.f } 
 	};
 	const FCCS::uint32 vertexBufferSize = sizeof(triangleVertices);
+	auto prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	auto desc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
 	Microsoft::WRL::ComPtr<ID3D12Resource> _vertexBuffer;
+	
 	_device->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+		&prop,
 		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize),
+		&desc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(&_vertexBuffer));
@@ -92,9 +95,20 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	_vertexBuffer->Unmap(0, nullptr);
 	D3D12_VERTEX_BUFFER_VIEW _vertexBufferView = {};
 	_vertexBufferView.BufferLocation = _vertexBuffer->GetGPUVirtualAddress();
-	_vertexBufferView.StrideInBytes = sizeof(triangleVertices);
+	_vertexBufferView.StrideInBytes = sizeof(float) * 4;
 	_vertexBufferView.SizeInBytes = vertexBufferSize;
+
+	CD3DX12_VIEWPORT m_viewport(0.F, 0.F, width, height);
+	CD3DX12_RECT m_scissorRect(0, 0, width, height);
 	while (window->IsRun()) {
+		auto frameIndex = swapchain->GetCurrentBackBufferIndex();
+		auto cmdalloc_ptr = FCCS::Cast<ID3D12CommandAllocator>(commandallocator[frameIndex]->GetNativePtr());
+		auto cmdlist_ptr = FCCS::Cast<ID3D12GraphicsCommandList>(commandlist->GetNativePtr());
+		commandallocator[frameIndex]->Reset();
+		cmdlist_ptr->Reset(cmdalloc_ptr, pipelinestate.Get());
+		cmdlist_ptr->SetGraphicsRootSignature(_rootSignature.Get());
+		cmdlist_ptr->RSSetViewports(1, &m_viewport);
+		cmdlist_ptr->RSSetScissorRects(1, &m_scissorRect);
 		swapchain->Present(1);
 	}
 
