@@ -44,6 +44,8 @@ namespace FCCS {
 		virtual DXGI_FORMAT GetDepthStencilFormat() const noexcept = 0;
 		virtual uint32 GetBufferCount() const noexcept = 0;
 		virtual uint32 GetCurrentBackBufferIndex() const noexcept = 0;
+		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView() const noexcept = 0;
+		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const noexcept = 0;
 	};
 
 	FCCS_API Device* CreateDevice(uint32 adapter);
