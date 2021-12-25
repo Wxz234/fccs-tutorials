@@ -1,3 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
 project(FCCS-Tutorials) 
 set(CMAKE_CXX_STANDARD 17)
+add_subdirectory(DirectX-Headers)
+add_subdirectory(FCCS)
