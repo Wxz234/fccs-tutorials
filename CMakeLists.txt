@@ -3,3 +3,5 @@ project(FCCS-Tutorials)
 set(CMAKE_CXX_STANDARD 17)
 add_subdirectory(DirectX-Headers)
 add_subdirectory(FCCS)
+
+add_subdirectory(01-CreateWindow)
