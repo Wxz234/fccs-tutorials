@@ -5,3 +5,4 @@ add_subdirectory(DirectX-Headers)
 add_subdirectory(FCCS)
 
 add_subdirectory(01-CreateWindow)
+add_subdirectory(02-InitializeDevice)
