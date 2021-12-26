@@ -117,7 +117,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		// Indicate that the back buffer will be used as a render target.
 		cmdlist_ptr->ResourceBarrier(1, &barrier);
 
-		auto rtvHandle = swapchain->GetRenderTargetView();
+		auto rtvHandle = swapchain->GetRenderTargetView(frameIndex);
 		cmdlist_ptr->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
 		// Record commands.
