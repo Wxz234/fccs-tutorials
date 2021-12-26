@@ -1,0 +1,6 @@
+add_executable(03-DrawTriangle WIN32 DrawTriangle.cpp)
+target_link_libraries(03-DrawTriangle PRIVATE FCCS d3dcompiler d3d12 DirectX-Headers)
+add_custom_command ( TARGET 03-DrawTriangle POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_FILE:FCCS> $<TARGET_FILE_DIR:03-DrawTriangle>
+)
