@@ -5,7 +5,6 @@
 #include <string>
 #include <d3dcommon.h>
 #include <d3dcompiler.h>
-#include <cstring>
 #define D3DX12_NO_STATE_OBJECT_HELPERS
 #define D3DX12_NO_CHECK_FEATURE_SUPPORT_CLASS
 #include <directx/d3dx12.h>
@@ -77,24 +76,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		{ 0.25f, -0.25f * ratio, 0.0f,1.f },
 		{ -0.25f, -0.25f * ratio, 0.0f,1.f }
 	};
-	const UINT vertexBufferSize = sizeof(triangleVertices);
-	auto prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	auto desc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer;
-
-	device_ptr->CreateCommittedResource(
-		&prop,
-		D3D12_HEAP_FLAG_NONE,
-		&desc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&vertexBuffer));
-	void* pVertexDataBegin;
-	vertexBuffer->Map(0, nullptr, reinterpret_cast<void**>(&pVertexDataBegin));
-	memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
-	vertexBuffer->Unmap(0, nullptr);
+	UINT vertexBufferSize = sizeof(triangleVertices);
+	auto buffer = device->CreateBuffer(vertexBufferSize);
+	buffer->Update(triangleVertices, vertexBufferSize);
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
-	vertexBufferView.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
+	vertexBufferView.BufferLocation = buffer->GetAddress();
 	vertexBufferView.StrideInBytes = sizeof(float) * 4;
 	vertexBufferView.SizeInBytes = vertexBufferSize;
 
@@ -140,6 +126,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	FCCS::DestroyFObject(device);
 	FCCS::DestroyFObject(window);
 	FCCS::DestroyFObject(commandlist);
+	FCCS::DestroyFObject(buffer);
 	for (auto alloc : commandallocator) {
 		FCCS::DestroyFObject(alloc);
 	}
