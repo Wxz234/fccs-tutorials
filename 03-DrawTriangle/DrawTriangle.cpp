@@ -77,7 +77,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		{ -0.25f, -0.25f * ratio, 0.0f,1.f }
 	};
 	UINT vertexBufferSize = sizeof(triangleVertices);
-	auto buffer = device->CreateStaticBuffer(triangleVertices,vertexBufferSize);
+	auto buffer = device->CreateStaticGpuBuffer(triangleVertices,vertexBufferSize);
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
 	vertexBufferView.BufferLocation = buffer->GetAddress();
 	vertexBufferView.StrideInBytes = sizeof(float) * 4;
