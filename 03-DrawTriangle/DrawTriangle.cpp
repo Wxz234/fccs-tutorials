@@ -3,8 +3,6 @@
 #include <vector>
 #include <wrl.h>
 #include <string>
-#include <d3dcommon.h>
-#include <d3dcompiler.h>
 #define D3DX12_NO_STATE_OBJECT_HELPERS
 #define D3DX12_NO_CHECK_FEATURE_SUPPORT_CLASS
 #include <directx/d3dx12.h>
@@ -32,10 +30,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	{
 		return float4(1.0f, 1.0f, 1.0f, 1.0f);
 	})";
-	Microsoft::WRL::ComPtr<ID3DBlob> vs_blob;
-	Microsoft::WRL::ComPtr<ID3DBlob> ps_blob;
-	D3DCompile(vs_str.c_str(), vs_str.size(), nullptr, nullptr, nullptr, "main", "vs_5_1", 0, 0, &vs_blob, nullptr);
-	D3DCompile(ps_str.c_str(), ps_str.size(), nullptr, nullptr, nullptr, "main", "ps_5_1", 0, 0, &ps_blob, nullptr);
+	auto vs_blob = FCCS::CompileShaderFromText(vs_str.c_str(), vs_str.size(), L"main", FCCS::ShaderType::Vertex);
+	auto ps_blob = FCCS::CompileShaderFromText(ps_str.c_str(), ps_str.size(), L"main", FCCS::ShaderType::Pixel);
+
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature;
 	auto device_ptr = FCCS::Cast<ID3D12Device>(device->GetNativePtr());
@@ -55,8 +52,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.InputLayout = { inputElementDescs, 1 };
 	psoDesc.pRootSignature = rootSignature.Get();
-	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs_blob.Get());
-	psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps_blob.Get());
+	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs_blob->GetBufferPointer(), vs_blob->GetBufferSize());
+	psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps_blob->GetBufferPointer(), ps_blob->GetBufferSize());
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState.DepthEnable = FALSE;
