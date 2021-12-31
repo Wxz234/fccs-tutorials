@@ -2,10 +2,11 @@
 #include <FCCS.h>
 #include <vector>
 #include <wrl.h>
-#include <string>
-#define D3DX12_NO_STATE_OBJECT_HELPERS
-#define D3DX12_NO_CHECK_FEATURE_SUPPORT_CLASS
-#include <directx/d3dx12.h>
+#include <dxgi.h>
+#include "d3dx12.h"
+//shader
+#include "vs.h"
+#include "ps.h"
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
 	constexpr unsigned width = 800, height = 600;
 	auto window = FCCS::CreateFCCSWindow(L"fccs", width, height);
@@ -19,20 +20,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	for (FCCS::uint32 i = 0; i < buffercount; ++i) {
 		commandallocator.emplace_back(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT));
 	}
-
-	std::string vs_str = R"(
-	float4 main( float4 pos : POSITION ) : SV_POSITION
-	{
-		return pos;
-	})";
-	std::string ps_str = R"(
-	float4 main() : SV_TARGET
-	{
-		return float4(1.0f, 1.0f, 1.0f, 1.0f);
-	})";
-	auto vs_blob = FCCS::CompileShaderFromText(vs_str.c_str(), vs_str.size(), L"main", FCCS::ShaderType::Vertex);
-	auto ps_blob = FCCS::CompileShaderFromText(ps_str.c_str(), ps_str.size(), L"main", FCCS::ShaderType::Pixel);
-
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature;
 	auto device_ptr = FCCS::Cast<ID3D12Device>(device->GetNativePtr());
@@ -52,8 +39,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.InputLayout = { inputElementDescs, 1 };
 	psoDesc.pRootSignature = rootSignature.Get();
-	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs_blob->GetBufferPointer(), vs_blob->GetBufferSize());
-	psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps_blob->GetBufferPointer(), ps_blob->GetBufferSize());
+	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs_blob, sizeof(vs_blob));
+	psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps_blob, sizeof(ps_blob));
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState.DepthEnable = FALSE;
