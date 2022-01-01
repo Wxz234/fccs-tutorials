@@ -61,7 +61,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		{ -0.25f, -0.25f * ratio, 0.0f,1.f }
 	};
 	UINT vertexBufferSize = sizeof(triangleVertices);
-	auto buffer = device->CreateStaticGpuBuffer(triangleVertices,vertexBufferSize);
+	auto buffer = device->CreateStaticGpuBuffer(triangleVertices, vertexBufferSize);
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
 	vertexBufferView.BufferLocation = buffer->GetAddress();
 	vertexBufferView.StrideInBytes = sizeof(float) * 4;
@@ -79,27 +79,17 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		cmdlist_ptr->RSSetViewports(1, &m_viewport);
 		cmdlist_ptr->RSSetScissorRects(1, &m_scissorRect);
 
-		auto swapchain_ptr = FCCS::Cast<IDXGISwapChain>(swapchain->GetNativePtr());
-		Microsoft::WRL::ComPtr<ID3D12Resource> renderTarget;
-		swapchain_ptr->GetBuffer(frameIndex, IID_PPV_ARGS(&renderTarget));
-		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(renderTarget.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		// Indicate that the back buffer will be used as a render target.
-		cmdlist_ptr->ResourceBarrier(1, &barrier);
-
+		auto texture = swapchain->GetTexture(frameIndex);
+		commandlist->ResourceBarrier(texture, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		auto rtvHandle = swapchain->GetRenderTargetView(frameIndex);
 		cmdlist_ptr->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
-
-		// Record commands.
 		const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 		cmdlist_ptr->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 		cmdlist_ptr->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		cmdlist_ptr->IASetVertexBuffers(0, 1, &vertexBufferView);
 		cmdlist_ptr->DrawInstanced(3, 1, 0, 0);
 
-		barrier = CD3DX12_RESOURCE_BARRIER::Transition(renderTarget.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-		// Indicate that the back buffer will now be used to present.
-		cmdlist_ptr->ResourceBarrier(1, &barrier);
-
+		commandlist->ResourceBarrier(texture, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 		commandlist->Close();
 		commandqueue->Execute(commandlist);
 		swapchain->Present(1);
