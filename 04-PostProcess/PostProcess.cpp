@@ -51,6 +51,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	CD3DX12_VIEWPORT m_viewport(0.f, 0.f, width, height);
 	CD3DX12_RECT m_scissorRect(0, 0, width, height);
 
+	auto tex_desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R8G8B8A8_UINT, width, height);
+	tex_desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = DXGI_FORMAT_R8G8B8A8_UINT;
+	clearValue.Color[0] = clearValue.Color[1] = clearValue.Color[2] = 0;
+	clearValue.Color[3] = 1.f;
+	auto render_texture = device->CreateTexture(&tex_desc, &clearValue);
+	auto rtv = render_texture->GetRenderTargetView();
 	while (window->IsRun()) {
 		auto frameIndex = swapchain->GetCurrentBackBufferIndex();
 		auto cmdalloc_ptr = FCCS::Cast<ID3D12CommandAllocator>(commandallocator->GetNativePtr());
@@ -61,6 +69,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		cmdlist_ptr->SetGraphicsRootSignature(FCCS::Cast<ID3D12RootSignature>(rootsignature->GetNativePtr()));
 		cmdlist_ptr->RSSetViewports(1, &m_viewport);
 		cmdlist_ptr->RSSetScissorRects(1, &m_scissorRect);
+
+		commandlist->ResourceBarrier(render_texture, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		cmdlist_ptr->OMSetRenderTargets(1, &rtv, FALSE, nullptr);
+		commandlist->ResourceBarrier(render_texture, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COMMON);
 
 		auto texture = swapchain->GetRenderTargetTexture(frameIndex);
 		commandlist->ResourceBarrier(texture, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -77,6 +89,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		swapchain->Present(1);
 	}
 
+
+
 	FCCS::DestroyFObject(swapchain);
 	FCCS::DestroyFObject(device);
 	FCCS::DestroyFObject(window);
@@ -85,5 +99,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	FCCS::DestroyFObject(commandallocator);
 	FCCS::DestroyFObject(pipelinestate);
 	FCCS::DestroyFObject(rootsignature);
+	FCCS::DestroyFObject(render_texture);
 	return 0;
 }
