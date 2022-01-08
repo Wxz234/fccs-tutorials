@@ -62,7 +62,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		cmdlist_ptr->RSSetViewports(1, &m_viewport);
 		cmdlist_ptr->RSSetScissorRects(1, &m_scissorRect);
 
-		auto texture = swapchain->GetTexture(frameIndex);
+		auto texture = swapchain->GetRenderTargetTexture(frameIndex);
 		commandlist->ResourceBarrier(texture, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		auto rtvHandle = swapchain->GetRenderTargetView(frameIndex);
 		cmdlist_ptr->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
