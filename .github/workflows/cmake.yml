@@ -1,10 +1,10 @@
-name: CMake
+name: static-build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ static ]
   pull_request:
-    branches: [ main ]
+    branches: [ static ]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
