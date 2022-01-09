@@ -6,6 +6,7 @@
 #include "Game.h"
 #include "vs.h"
 #include "ps.h"
+#include <cstring>
 
 extern void ExitGame() noexcept;
 
@@ -79,6 +80,22 @@ void Game::Initialize(HWND window, int width, int height)
     psoDesc.SampleDesc.Count = 1;
     m_d3dDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pso));
 
+    float triangleVertices[3][4] = {
+        { 0.00f, 0.25f, 0.00f, 1.00f },
+        { 0.25f,-0.25f, 0.00f, 1.00f },
+        {-0.25f,-0.25f, 0.00f, 1.00f },
+    };
+
+    auto buffer_prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+    auto buffe_desc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(triangleVertices));
+    m_d3dDevice->CreateCommittedResource(&buffer_prop, D3D12_HEAP_FLAG_NONE, &buffe_desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_vertex));
+    void* myVertex = nullptr;
+    m_vertex->Map(0, nullptr, &myVertex);
+    memcpy(myVertex, triangleVertices, sizeof(triangleVertices));
+    
+    m_vertexBufferView.BufferLocation = m_vertex->GetGPUVirtualAddress();
+    m_vertexBufferView.StrideInBytes = sizeof(float) * 4;
+    m_vertexBufferView.SizeInBytes = sizeof(triangleVertices);
 }
 
 // Executes the basic game loop.
@@ -112,8 +129,12 @@ void Game::Render()
 
     // Prepare the command list to render a new frame.
     Clear();
-
     // TODO: Add your rendering code here.
+    m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
+    m_commandList->SetPipelineState(m_pso.Get());
+    m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
+    m_commandList->DrawInstanced(3, 1, 0, 0);
 
     // Show the new frame.
     Present();

@@ -90,4 +90,6 @@ private:
     fccs::rhi::DeviceHandle                             m_fccsDevice;
     Microsoft::WRL::ComPtr<ID3D12RootSignature>         m_rootSignature;
     Microsoft::WRL::ComPtr<ID3D12PipelineState>         m_pso;
+    Microsoft::WRL::ComPtr<ID3D12Resource>              m_vertex;
+    D3D12_VERTEX_BUFFER_VIEW                            m_vertexBufferView = {};
 };
