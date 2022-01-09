@@ -1,0 +1,4 @@
+[submodule "fccs"]
+	path = fccs
+	url = https://github.com/Wxz234/fccs
+	branch = static
