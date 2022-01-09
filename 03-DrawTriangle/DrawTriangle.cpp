@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include <FCCS.h>
+#include <vector>
 #include "d3dx12.h"
 //shader
 #include "vs.h"
@@ -11,7 +12,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	auto swapchain = FCCS::CreateSwapChain(device, window);
 	auto commandqueue = device->GetRenderCommandQueue();
 	auto commandlist = device->CreateCommandList(D3D12_COMMAND_LIST_TYPE_DIRECT);
-	auto commandallocator = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
+	std::vector<FCCS::CommandAllocator*> commandallocator;
+	for (FCCS::uint32 i = 0;i < swapchain->GetBufferCount(); ++i) {
+		commandallocator.push_back(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT));
+	}
 
 	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
 	rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -53,11 +57,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	while (window->IsRun()) {
 		auto frameIndex = swapchain->GetCurrentBackBufferIndex();
-		auto cmdalloc_ptr = FCCS::Cast<ID3D12CommandAllocator>(commandallocator->GetNativePtr());
+		auto cmdalloc_ptr = FCCS::Cast<ID3D12CommandAllocator>(commandallocator[frameIndex]->GetNativePtr());
 		auto cmdlist_ptr = FCCS::Cast<ID3D12GraphicsCommandList>(commandlist->GetNativePtr());
 
-		commandallocator->Reset();
-		commandlist->Reset(commandallocator, pipelinestate);
+		commandallocator[frameIndex]->Reset();
+		commandlist->Reset(commandallocator[frameIndex], pipelinestate);
 		cmdlist_ptr->SetGraphicsRootSignature(FCCS::Cast<ID3D12RootSignature>(rootsignature->GetNativePtr()));
 		cmdlist_ptr->RSSetViewports(1, &m_viewport);
 		cmdlist_ptr->RSSetScissorRects(1, &m_scissorRect);
@@ -82,8 +86,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	FCCS::DestroyFObject(window);
 	FCCS::DestroyFObject(commandlist);
 	FCCS::DestroyFObject(buffer);
-	FCCS::DestroyFObject(commandallocator);
 	FCCS::DestroyFObject(pipelinestate);
 	FCCS::DestroyFObject(rootsignature);
+	for (auto allocator : commandallocator) {
+		FCCS::DestroyFObject(allocator);
+	}
 	return 0;
 }
