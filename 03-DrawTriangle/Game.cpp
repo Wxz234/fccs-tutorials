@@ -47,11 +47,9 @@ void Game::Initialize(HWND window, int width, int height)
     m_timer.SetFixedTimeStep(true);
     m_timer.SetTargetElapsedSeconds(1.0 / 60);
     */
-    fccs::rhi::DeviceDesc desc = {};
+    fccs::rhi::DeviceDesc desc;
     desc.pDevice = m_d3dDevice.Get();
-    desc.pGraphicsCommandQueue = m_commandQueue.Get();
     m_fccsDevice = fccs::rhi::createDeivce(desc);
-    m_fccsList = m_fccsDevice->createCommandList();
 
     CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
     rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -132,8 +130,6 @@ void Game::Render()
     // Prepare the command list to render a new frame.
     Clear();
     // TODO: Add your rendering code here.
-
-    auto m_commandList = (ID3D12GraphicsCommandList*)m_fccsList->getNativePtr();
     m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
     m_commandList->SetPipelineState(m_pso.Get());
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -147,8 +143,10 @@ void Game::Render()
 // Helper method to prepare the command list for rendering and clear the back buffers.
 void Game::Clear()
 {
-    m_fccsList->open();
-    auto m_commandList = (ID3D12GraphicsCommandList*)m_fccsList->getNativePtr();
+    // Reset command list and allocator.
+    DX::ThrowIfFailed(m_commandAllocators[m_backBufferIndex]->Reset());
+    DX::ThrowIfFailed(m_commandList->Reset(m_commandAllocators[m_backBufferIndex].Get(), nullptr));
+
     // Transition the render target into the correct state to allow for drawing into it.
     D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_backBufferIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     m_commandList->ResourceBarrier(1, &barrier);
@@ -172,14 +170,13 @@ void Game::Clear()
 // Submits the command list to the GPU and presents the back buffer contents to the screen.
 void Game::Present()
 {
-    auto m_commandList = (ID3D12GraphicsCommandList*)m_fccsList->getNativePtr();
     // Transition the render target to the state that allows it to be presented to the display.
     D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_backBufferIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commandList->ResourceBarrier(1, &barrier);
 
-    m_fccsList->close();
-    fccs::rhi::ICommandList* pLists[] = { m_fccsList.get() };
-    m_fccsDevice->executeCommandLists(pLists, 1);
+    // Send the command list off to the GPU for processing.
+    DX::ThrowIfFailed(m_commandList->Close());
+    m_commandQueue->ExecuteCommandLists(1, CommandListCast(m_commandList.GetAddressOf()));
 
     // The first argument instructs DXGI to block until VSync, putting the application
     // to sleep until the next VSync. This ensures we don't waste any cycles rendering
@@ -330,7 +327,9 @@ void Game::CreateDevice()
         DX::ThrowIfFailed(m_d3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_commandAllocators[n].ReleaseAndGetAddressOf())));
     }
 
-
+    // Create a command list for recording graphics commands.
+    DX::ThrowIfFailed(m_d3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[0].Get(), nullptr, IID_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
+    DX::ThrowIfFailed(m_commandList->Close());
 
     // Create a fence for tracking GPU execution progress.
     DX::ThrowIfFailed(m_d3dDevice->CreateFence(m_fenceValues[m_backBufferIndex], D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_fence.ReleaseAndGetAddressOf())));
@@ -583,6 +582,7 @@ void Game::OnDeviceLost()
 
     m_depthStencil.Reset();
     m_fence.Reset();
+    m_commandList.Reset();
     m_swapChain.Reset();
     m_rtvDescriptorHeap.Reset();
     m_dsvDescriptorHeap.Reset();
