@@ -39,6 +39,11 @@ void Game::Initialize(HWND window, int width, int height)
     m_outputHeight = std::max(height, 1);
 
     CreateDevice();
+    fccs::rhi::DeviceDesc desc;
+    desc.pDevice = m_d3dDevice.Get();
+    m_fccsDevice = fccs::rhi::createDeivce(desc);
+    m_fccsQueue = m_fccsDevice->createCommandQueue(fccs::rhi::CommandQueueType::Graphics);
+    m_fccsList = m_fccsDevice->createCommandList(fccs::rhi::CommandQueueType::Graphics);
     CreateResources();
 
     // TODO: Change the timer settings if you want something other than the default variable timestep mode.
@@ -47,9 +52,6 @@ void Game::Initialize(HWND window, int width, int height)
     m_timer.SetFixedTimeStep(true);
     m_timer.SetTargetElapsedSeconds(1.0 / 60);
     */
-    fccs::rhi::DeviceDesc desc;
-    desc.pDevice = m_d3dDevice.Get();
-    m_fccsDevice = fccs::rhi::createDeivce(desc);
 
     CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
     rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -130,6 +132,7 @@ void Game::Render()
     // Prepare the command list to render a new frame.
     Clear();
     // TODO: Add your rendering code here.
+    auto m_commandList = (ID3D12GraphicsCommandList*)(m_fccsList->getNativePtr());
     m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
     m_commandList->SetPipelineState(m_pso.Get());
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -144,9 +147,10 @@ void Game::Render()
 void Game::Clear()
 {
     // Reset command list and allocator.
-    DX::ThrowIfFailed(m_commandAllocators[m_backBufferIndex]->Reset());
-    DX::ThrowIfFailed(m_commandList->Reset(m_commandAllocators[m_backBufferIndex].Get(), nullptr));
-
+    //DX::ThrowIfFailed(m_commandAllocators[m_backBufferIndex]->Reset());
+    //DX::ThrowIfFailed(m_commandList->Reset(m_commandAllocators[m_backBufferIndex].Get(), nullptr));
+    m_fccsList->open();
+    auto m_commandList = (ID3D12GraphicsCommandList*)(m_fccsList->getNativePtr());
     // Transition the render target into the correct state to allow for drawing into it.
     D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_backBufferIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     m_commandList->ResourceBarrier(1, &barrier);
@@ -170,14 +174,17 @@ void Game::Clear()
 // Submits the command list to the GPU and presents the back buffer contents to the screen.
 void Game::Present()
 {
+    auto m_commandList = (ID3D12GraphicsCommandList*)(m_fccsList->getNativePtr());
     // Transition the render target to the state that allows it to be presented to the display.
     D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_backBufferIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commandList->ResourceBarrier(1, &barrier);
 
     // Send the command list off to the GPU for processing.
-    DX::ThrowIfFailed(m_commandList->Close());
-    m_commandQueue->ExecuteCommandLists(1, CommandListCast(m_commandList.GetAddressOf()));
-
+    //DX::ThrowIfFailed(m_commandList->Close());
+    //m_commandQueue->ExecuteCommandLists(1, CommandListCast(m_commandList.GetAddressOf()));
+    m_fccsList->close();
+    fccs::rhi::ICommandList* pList[] = { m_fccsList.get()};
+    m_fccsQueue->executeCommandLists(1, pList);
     // The first argument instructs DXGI to block until VSync, putting the application
     // to sleep until the next VSync. This ensures we don't waste any cycles rendering
     // frames that will never be displayed to the screen.
@@ -305,7 +312,7 @@ void Game::CreateDevice()
     queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-    DX::ThrowIfFailed(m_d3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(m_commandQueue.ReleaseAndGetAddressOf())));
+    //DX::ThrowIfFailed(m_d3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(m_commandQueue.ReleaseAndGetAddressOf())));
 
     // Create descriptor heaps for render target views and depth stencil views.
     D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc = {};
@@ -322,14 +329,14 @@ void Game::CreateDevice()
     m_rtvDescriptorSize = m_d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
     // Create a command allocator for each back buffer that will be rendered to.
-    for (UINT n = 0; n < c_swapBufferCount; n++)
-    {
-        DX::ThrowIfFailed(m_d3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_commandAllocators[n].ReleaseAndGetAddressOf())));
-    }
+    //for (UINT n = 0; n < c_swapBufferCount; n++)
+    //{
+    //    DX::ThrowIfFailed(m_d3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_commandAllocators[n].ReleaseAndGetAddressOf())));
+    //}
 
     // Create a command list for recording graphics commands.
-    DX::ThrowIfFailed(m_d3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[0].Get(), nullptr, IID_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
-    DX::ThrowIfFailed(m_commandList->Close());
+    //DX::ThrowIfFailed(m_d3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[0].Get(), nullptr, IID_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
+    //DX::ThrowIfFailed(m_commandList->Close());
 
     // Create a fence for tracking GPU execution progress.
     DX::ThrowIfFailed(m_d3dDevice->CreateFence(m_fenceValues[m_backBufferIndex], D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(m_fence.ReleaseAndGetAddressOf())));
@@ -416,7 +423,7 @@ void Game::CreateResources()
         // Create a swap chain for the window.
         ComPtr<IDXGISwapChain1> swapChain;
         DX::ThrowIfFailed(m_dxgiFactory->CreateSwapChainForHwnd(
-            m_commandQueue.Get(),
+            (ID3D12CommandQueue*)(m_fccsQueue->getNativePtr()),
             m_window,
             &swapChainDesc,
             &fsSwapChainDesc,
@@ -489,6 +496,10 @@ void Game::CreateResources()
 
 void Game::WaitForGpu() noexcept
 {
+    if (!m_fccsQueue) {
+        return;
+    }
+    auto m_commandQueue = (ID3D12CommandQueue*)(m_fccsQueue->getNativePtr());
     if (m_commandQueue && m_fence && m_fenceEvent.IsValid())
     {
         // Schedule a Signal command in the GPU queue.
@@ -510,6 +521,7 @@ void Game::WaitForGpu() noexcept
 void Game::MoveToNextFrame()
 {
     // Schedule a Signal command in the queue.
+    auto m_commandQueue = (ID3D12CommandQueue*)(m_fccsQueue->getNativePtr());
     const UINT64 currentFenceValue = m_fenceValues[m_backBufferIndex];
     DX::ThrowIfFailed(m_commandQueue->Signal(m_fence.Get(), currentFenceValue));
 
@@ -576,17 +588,17 @@ void Game::OnDeviceLost()
 
     for (UINT n = 0; n < c_swapBufferCount; n++)
     {
-        m_commandAllocators[n].Reset();
+        //m_commandAllocators[n].Reset();
         m_renderTargets[n].Reset();
     }
 
     m_depthStencil.Reset();
     m_fence.Reset();
-    m_commandList.Reset();
+    //m_commandList.Reset();
     m_swapChain.Reset();
     m_rtvDescriptorHeap.Reset();
     m_dsvDescriptorHeap.Reset();
-    m_commandQueue.Reset();
+    //m_commandQueue.Reset();
     m_d3dDevice.Reset();
     m_dxgiFactory.Reset();
 
