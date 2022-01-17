@@ -45,6 +45,8 @@ public:
 		psoDesc.RTVFormats[0] = DXGI_FORMAT_B8G8R8A8_UNORM;
 		psoDesc.SampleDesc.Count = 1;
 
+		device_ptr->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pso));
+
 		float triangleVertices[3][4] = {
 			{ 0.00f, 0.25f, 0.00f, 1.00f },
 			{ 0.25f,-0.25f, 0.00f, 1.00f },
@@ -66,10 +68,28 @@ public:
 	void Update() {
 		list->Open();
 		auto m_commandList = (ID3D12GraphicsCommandList*)(list->GetNativePtr());
-		//Microsoft::WRL::ComPtr<ID3D12Resource>  m_renderTargets = swapchain->GetNativeResourcePtr(1);
+		auto frameIndex = swapchain->GetCurrentBackBufferIndex();
+		Microsoft::WRL::ComPtr<ID3D12Resource>  m_renderTargets = swapchain->GetNativeResourcePtr(frameIndex);
 		// Transition the render target into the correct state to allow for drawing into it.
-		//D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		//m_commandList->ResourceBarrier(1, &barrier);
+		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		m_commandList->ResourceBarrier(1, &barrier);
+
+		auto rtvDescriptor = swapchain->GetRenderTargetView(frameIndex);
+		m_commandList->OMSetRenderTargets(1, &rtvDescriptor, FALSE, nullptr);
+
+		D3D12_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(800), static_cast<float>(600), D3D12_MIN_DEPTH, D3D12_MAX_DEPTH };
+		D3D12_RECT scissorRect = { 0, 0, static_cast<LONG>(800), static_cast<LONG>(600) };
+		m_commandList->RSSetViewports(1, &viewport);
+		m_commandList->RSSetScissorRects(1, &scissorRect);
+
+		m_commandList->SetGraphicsRootSignature(rootSignature.Get());
+		m_commandList->SetPipelineState(pso.Get());
+		m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+		m_commandList->DrawInstanced(3, 1, 0, 0);
+
+		barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+		m_commandList->ResourceBarrier(1, &barrier);
 
 		list->Close();
 		fccs::rhi::ICommandList* lists[] = { list.get() };
@@ -84,6 +104,7 @@ private:
 	fccs::rhi::CommandListHandle list;
 	fccs::window::SwapChainHandle swapchain;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> pso;
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertex;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
 };
