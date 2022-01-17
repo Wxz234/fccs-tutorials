@@ -65,6 +65,12 @@ public:
 	}
 	void Update() {
 		list->Open();
+		auto m_commandList = (ID3D12GraphicsCommandList*)(list->GetNativePtr());
+		//Microsoft::WRL::ComPtr<ID3D12Resource>  m_renderTargets = swapchain->GetNativeResourcePtr(1);
+		// Transition the render target into the correct state to allow for drawing into it.
+		//D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		//m_commandList->ResourceBarrier(1, &barrier);
+
 		list->Close();
 		fccs::rhi::ICommandList* lists[] = { list.get() };
 		queue->ExecuteCommandLists(1, lists);
