@@ -12,12 +12,13 @@ public:
 	void Initialize() {
 		device = fccs::rhi::CreateDeivce();
 		queue = device->CreateCommandQueue(fccs::rhi::CommandQueueType::Graphics);
+		list = device->CreateCommandList(fccs::rhi::CommandQueueType::Graphics);
 		fccs::window::SwapChainDesc swapchainDesc = {};
 		swapchainDesc.width = 800;
 		swapchainDesc.height = 600;
 		swapchainDesc.hwnd = hwnd;
 		swapchain = fccs::window::CreateSwapChain(swapchainDesc, queue.get());
-
+		
 		CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
 		rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 		Microsoft::WRL::ComPtr<ID3DBlob> signature;
@@ -63,6 +64,10 @@ public:
 		vertexBufferView.SizeInBytes = sizeof(triangleVertices);
 	}
 	void Update() {
+		list->Open();
+		list->Close();
+		fccs::rhi::ICommandList* lists[] = { list.get() };
+		queue->ExecuteCommandLists(1, lists);
 		swapchain->Present(1);
 	}
 	void Release() {}
@@ -70,6 +75,7 @@ private:
 	HWND hwnd;
 	fccs::rhi::DeviceHandle device;
 	fccs::rhi::CommandQueueHandle queue;
+	fccs::rhi::CommandListHandle list;
 	fccs::window::SwapChainHandle swapchain;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature;
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertex;
