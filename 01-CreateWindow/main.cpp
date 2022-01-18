@@ -1,3 +1,4 @@
+#define UNICODE
 #include <Windows.h>
 #include <fccs/fccs.h>
 
