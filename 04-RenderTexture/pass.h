@@ -1,7 +1,6 @@
 #pragma once
 #include <fccs/fccs.h>
-#include <thread>
-
+#include <d3dx12.h>
 class RenderTexturePass {
 public:
 	RenderTexturePass(fccs::rhi::IDevice *pDevice){
@@ -9,14 +8,24 @@ public:
 	}
 	~RenderTexturePass() { fccs::DestroyResource(list); }
 	void Execute() {
-		std::thread t(
-			[this]() {
-				list->Open();
-				list->Close();
-			}
-		);
-		t.join();
+		list->Open();
+		list->Close();
 	}
-
 	fccs::rhi::ICommandList* list;
 };
+
+class RenderSwapChainPass {
+public:
+	RenderSwapChainPass(fccs::rhi::IDevice* pDevice, fccs::rhi::ISwapChain *pSwapchain) {
+		list = pDevice->CreateCommandList(fccs::rhi::CommandQueueType::Graphics);
+		swapchain = pSwapchain;
+	}
+	~RenderSwapChainPass() { fccs::DestroyResource(list); }
+	void Execute() {
+		list->Open();
+		list->Close();
+	}
+	fccs::rhi::ICommandList* list;
+	fccs::rhi::ISwapChain* swapchain;
+};
+

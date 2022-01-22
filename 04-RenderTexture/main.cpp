@@ -2,6 +2,8 @@
 #include <Windows.h>
 #include <fccs/fccs.h>
 #include <vector>
+#include <thread>
+#include <d3dx12.h>
 #include "pass.h"
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
@@ -17,6 +19,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     //Pass
     RenderTexturePass rendertexture(device);
+    //
+
 
     MSG msg = {};
 
@@ -29,9 +33,19 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         }
         else
         {
-            //
-            rendertexture.Execute();
-            //
+
+            //GPU
+            {
+                std::thread rendertextureThread(
+                    [&]() {
+                        rendertexture.Execute();
+                    }
+                );
+
+                rendertextureThread.join();
+            }
+            
+
             std::vector<fccs::rhi::ICommandList*> pLists;
             pLists.emplace_back(rendertexture.list);
 
