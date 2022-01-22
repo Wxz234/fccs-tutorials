@@ -1,6 +1,8 @@
 #define UNICODE
 #include <Windows.h>
 #include <fccs/fccs.h>
+#include <vector>
+#include "pass.h"
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
@@ -12,13 +14,12 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     auto device = fccs::rhi::CreateDeivce();
     auto queue = device->CreateCommandQueue(fccs::rhi::CommandQueueType::Graphics);
     auto swapchain = fccs::rhi::CreateSwapChain(queue, width, height, window->GetHWND());
-    fccs::rhi::TextureDesc textureDesc = {};
-    textureDesc.width = 2000;
-    textureDesc.height = 2000;
-    textureDesc.format = fccs::rhi::Format::RGBA8_UNORM;
-    auto texture = device->CreateTexture(textureDesc);
+
+    //Pass
+    RenderTexturePass rendertexture(device);
 
     MSG msg = {};
+
     while (WM_QUIT != msg.message)
     {
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -28,11 +29,17 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         }
         else
         {
+            //
+            rendertexture.Execute();
+            //
+            std::vector<fccs::rhi::ICommandList*> pLists;
+            pLists.emplace_back(rendertexture.list);
+
+            queue->ExecuteCommandLists(pLists.size(), pLists.data());
             swapchain->Present(1);
         }
     }
 
-    fccs::DestroyResource(texture);
     fccs::DestroyResource(window);
     fccs::DestroyResource(device);
     fccs::DestroyResource(queue);

@@ -7,4 +7,4 @@ add_subdirectory(fccs)
 add_subdirectory(01-CreateWindow)
 add_subdirectory(02-InitializeDevice)
 add_subdirectory(03-CreateTexture)
-
+add_subdirectory(04-RenderTexture)
