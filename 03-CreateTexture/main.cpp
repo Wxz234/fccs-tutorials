@@ -13,8 +13,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     auto queue = device->CreateCommandQueue(fccs::rhi::CommandQueueType::Graphics);
     auto swapchain = fccs::rhi::CreateSwapChain(queue, width, height, window->GetHWND());
     fccs::rhi::TextureDesc textureDesc = {};
-    textureDesc.width = width;
-    textureDesc.height = height;
+    textureDesc.width = 2000;
+    textureDesc.height = 2000;
+    textureDesc.format = fccs::rhi::Format::RGBA8_UNORM;
     auto texture = device->CreateTexture(textureDesc);
 
     MSG msg = {};
