@@ -12,6 +12,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     auto device = fccs::rhi::CreateDeivce();
     auto queue = device->CreateCommandQueue(fccs::rhi::CommandQueueType::Graphics);
     auto swapchain = fccs::rhi::CreateSwapChain(queue, width, height, window->GetHWND());
+    fccs::rhi::TextureDesc textureDesc = {};
+    textureDesc.width = width;
+    textureDesc.height = height;
+    auto texture = device->CreateTexture(textureDesc);
 
     MSG msg = {};
     while (WM_QUIT != msg.message)
@@ -27,6 +31,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         }
     }
 
+
+    fccs::DestroyResource(texture);
     fccs::DestroyResource(window);
     fccs::DestroyResource(device);
     fccs::DestroyResource(queue);
