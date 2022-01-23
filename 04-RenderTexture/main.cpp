@@ -1,29 +1,26 @@
 #define UNICODE
 #include <Windows.h>
 #include <fccs/fccs.h>
-#include <vector>
-#include <thread>
-#include <d3dx12.h>
-#include "pass.h"
+
+using namespace fccs;
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
     constexpr uint32_t width = 800, height = 600;
-    fccs::window::WindowDesc windowDesc = { width, height, L"fccs" };
-    auto window = fccs::window::CreateFCCSWindow(windowDesc);
+    window::WindowDesc windowDesc = { width, height, L"fccs" };
+    auto window = window::CreateFCCSWindow(windowDesc);
     window->OpenWindow();
 
-    auto device = fccs::rhi::CreateDeivce();
-    auto queue = device->CreateCommandQueue(fccs::rhi::CommandQueueType::Graphics);
-    auto swapchain = fccs::rhi::CreateSwapChain(queue, width, height, window->GetHWND());
-
-    //Pass
-    RenderTexturePass rendertexture(device);
-    //
-
+    auto device = rhi::CreateDeivce();
+    auto queue = device->CreateCommandQueue(rhi::CommandQueueType::Graphics);
+    auto swapchain = rhi::CreateSwapChain(queue, width, height, window->GetHWND());
+    rhi::TextureDesc textureDesc = {};
+    textureDesc.width = 2000;
+    textureDesc.height = 2000;
+    textureDesc.format = rhi::Format::RGBA8_UNORM;
+    auto texture = device->CreateTexture(textureDesc);
 
     MSG msg = {};
-
     while (WM_QUIT != msg.message)
     {
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -33,30 +30,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         }
         else
         {
-
-            //GPU
-            {
-                std::thread rendertextureThread(
-                    [&]() {
-                        rendertexture.Execute();
-                    }
-                );
-
-                rendertextureThread.join();
-            }
-            
-
-            std::vector<fccs::rhi::ICommandList*> pLists;
-            pLists.emplace_back(rendertexture.list);
-
-            queue->ExecuteCommandLists(pLists.size(), pLists.data());
             swapchain->Present(1);
         }
     }
 
-    fccs::DestroyResource(window);
-    fccs::DestroyResource(device);
-    fccs::DestroyResource(queue);
-    fccs::DestroyResource(swapchain);
+    DestroyResource(texture);
+    DestroyResource(window);
+    DestroyResource(device);
+    DestroyResource(queue);
+    DestroyResource(swapchain);
     return 0;
 }
